@@ -24,7 +24,13 @@ const LeadershipItem = ({ item, index }) => {
           </div>
           
           <h3 className="text-white text-xl font-black mb-1 tracking-tight group-hover:text-[#ff2a2a] transition-colors">
-            {item.title}
+            {item.link ? (
+              <a href={item.link} target="_blank" rel="noopener noreferrer" className="hover:underline decoration-[#ff2a2a] underline-offset-4">
+                {item.title}
+              </a>
+            ) : (
+              item.title
+            )}
           </h3>
           <p className="text-red-400 text-xs font-bold font-mono tracking-wider uppercase mb-4">
             {item.role}
@@ -32,6 +38,19 @@ const LeadershipItem = ({ item, index }) => {
           <p className="text-white/60 text-sm leading-relaxed font-medium">
             {item.description}
           </p>
+          {item.link && (
+            <a
+              href={item.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`inline-flex items-center gap-1.5 mt-4 text-xs font-bold text-[#ff2a2a] hover:gap-2.5 transition-all ${isEven ? 'md:justify-end' : ''}`}
+            >
+              Read paper
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            </a>
+          )}
         </div>
       </div>
 
@@ -43,7 +62,7 @@ const LeadershipItem = ({ item, index }) => {
 
 const Leadership = () => {
   return (
-    <section className="bg-[#0a0a0a] pt-24 pb-32 px-6 md:px-12 w-full relative overflow-hidden font-sans bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:80px_80px]">
+    <section id="research" className="bg-[#0a0a0a] pt-24 pb-32 px-6 md:px-12 w-full relative overflow-hidden font-sans bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:80px_80px]">
       
       {/* Torn paper divider at top */}
       <div className="absolute top-0 left-0 w-full pointer-events-none z-10 transform -translate-y-[1px] rotate-180">
@@ -60,7 +79,7 @@ const Leadership = () => {
             Research
           </div>
           <h2 className="text-4xl md:text-5xl font-black text-white tracking-tight mb-4 uppercase">
-            Publications
+            Research &amp; Publications
           </h2>
           <p className="text-white/50 text-base md:text-lg max-w-lg mx-auto leading-relaxed">
             Peer-reviewed research published in international engineering journals.

@@ -187,6 +187,7 @@ export const leadershipList = [
       "Published in the International Journal of Innovative Research in Engineering and Multidisciplinary Physical Sciences (IJIRMPS).",
     role: "IJIRMPS · Sep 2024",
     badge: "Publication",
+    link: "https://www.ijirmps.org/research-paper.php?id=231231",
   },
   {
     title: "Gesture Recognition Using Virtual Mouse",
@@ -194,6 +195,7 @@ export const leadershipList = [
       "Published in the International Journal of Innovative Research in Engineering and Multidisciplinary Physical Sciences (IJIRMPS).",
     role: "IJIRMPS · Aug 2024",
     badge: "Publication",
+    link: "https://www.ijirmps.org/research-paper.php?id=230945",
   },
 ];
 

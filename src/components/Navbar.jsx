@@ -18,7 +18,7 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const navLinks = ['Home', 'About', 'Skills', 'Projects', 'Contact'];
+  const navLinks = ['Home', 'About', 'Skills', 'Projects', 'Research', 'Contact'];
 
   const hireMeMailto = `mailto:${personalInfo.emails.primary}?subject=Hello from your portfolio&body=Hi ${personalInfo.firstName},%0D%0A%0D%0AI came across your portfolio and would like to connect.%0D%0A%0D%0ABest regards,`;
 
