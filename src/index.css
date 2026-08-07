@@ -79,3 +79,33 @@ body {
   .cursor-dot, .cursor-ring { display: none; }
   @media (pointer: fine) { * { cursor: auto !important; } }
 }
+
+/* ── Boot bot mascot ───────────────────────────────────────── */
+.boot-bot {
+  animation: botFloat 2.6s ease-in-out infinite;
+  filter: drop-shadow(0 8px 24px rgba(255,42,42,0.25));
+}
+@keyframes botFloat {
+  0%,100% { transform: translateY(0) rotate(-1.5deg); }
+  50%     { transform: translateY(-8px) rotate(1.5deg); }
+}
+.bot-eye {
+  transform-origin: center;
+  animation: botBlink 3.2s ease-in-out infinite;
+  filter: drop-shadow(0 0 6px rgba(255,42,42,0.9));
+}
+@keyframes botBlink {
+  0%,92%,100% { transform: scaleY(1); }
+  95%,97%     { transform: scaleY(0.1); }
+}
+.bot-antenna {
+  transform-origin: center;
+  animation: botPulse 1.4s ease-in-out infinite;
+}
+@keyframes botPulse {
+  0%,100% { opacity: 1; transform: scale(1); }
+  50%     { opacity: 0.4; transform: scale(1.35); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .boot-bot, .bot-eye, .bot-antenna { animation: none; }
+}

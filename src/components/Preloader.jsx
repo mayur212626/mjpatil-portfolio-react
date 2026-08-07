@@ -129,6 +129,35 @@ const Preloader = () => {
             transition={{ duration: 0.35 }}
             className="relative z-10 w-[90%] max-w-lg font-mono text-[13px] md:text-sm"
           >
+            {/* Boot bot mascot */}
+            <motion.div
+              initial={{ opacity: 0, y: 12, scale: 0.8 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ duration: 0.5, ease: 'backOut' }}
+              className="flex justify-center mb-5"
+            >
+              <svg viewBox="0 0 120 128" className="boot-bot w-24 h-24 md:w-28 md:h-28" aria-hidden="true">
+                {/* antenna */}
+                <line x1="60" y1="22" x2="60" y2="8" stroke="#ff2a2a" strokeWidth="3" strokeLinecap="round" />
+                <circle cx="60" cy="6" r="5" fill="#ff2a2a" className="bot-antenna" />
+                {/* ears */}
+                <rect x="16" y="42" width="9" height="20" rx="4.5" fill="#2a2d38" />
+                <rect x="95" y="42" width="9" height="20" rx="4.5" fill="#2a2d38" />
+                {/* head */}
+                <rect x="24" y="22" width="72" height="60" rx="18" fill="#e8eaf0" stroke="#ff2a2a" strokeWidth="2" />
+                {/* face screen */}
+                <rect x="33" y="31" width="54" height="42" rx="12" fill="#0a0b0f" />
+                {/* eyes */}
+                <circle cx="49" cy="50" r="6.5" fill="#ff2a2a" className="bot-eye" />
+                <circle cx="71" cy="50" r="6.5" fill="#ff2a2a" className="bot-eye" />
+                {/* smile */}
+                <path d="M49 62 Q60 69 71 62" stroke="#ff2a2a" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+                {/* neck + body hint */}
+                <rect x="52" y="82" width="16" height="8" fill="#2a2d38" />
+                <rect x="34" y="90" width="52" height="26" rx="12" fill="#e8eaf0" stroke="#ff2a2a" strokeWidth="2" />
+                <circle cx="60" cy="103" r="5" fill="#ff2a2a" className="bot-antenna" />
+              </svg>
+            </motion.div>
             <div className="flex items-center gap-2 mb-4 opacity-70">
               <span className="w-3 h-3 rounded-full bg-[#ff5f57]" />
               <span className="w-3 h-3 rounded-full bg-[#febc2e]" />
