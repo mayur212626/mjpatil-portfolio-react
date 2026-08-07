@@ -1,5 +1,27 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { projects, socialLinks } from '../data/portfolioData';
+
+// 3D tilt + cursor spotlight. Disabled on touch (no fine pointer).
+const useTilt = () => {
+  const ref = useRef(null);
+  const fine = typeof window !== 'undefined' && window.matchMedia('(pointer: fine)').matches;
+  const onMove = (e) => {
+    if (!fine || !ref.current) return;
+    const el = ref.current;
+    const r = el.getBoundingClientRect();
+    const px = (e.clientX - r.left) / r.width;   // 0..1
+    const py = (e.clientY - r.top) / r.height;
+    const rotY = (px - 0.5) * 10;   // deg
+    const rotX = (0.5 - py) * 10;
+    el.style.transform = `perspective(900px) rotateX(${rotX}deg) rotateY(${rotY}deg) scale(1.015)`;
+    el.style.setProperty('--mx', `${px * 100}%`);
+    el.style.setProperty('--my', `${py * 100}%`);
+  };
+  const onLeave = () => {
+    if (ref.current) ref.current.style.transform = 'perspective(900px) rotateX(0) rotateY(0) scale(1)';
+  };
+  return { ref, onMove, onLeave, fine };
+};
 
 const GitHubIcon = () => (
   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -13,19 +35,30 @@ const ExternalLinkIcon = () => (
   </svg>
 );
 
-const ProjectCard = ({ project, aosDelay }) => (
-  <div 
+const ProjectCard = ({ project, aosDelay }) => {
+  const { ref, onMove, onLeave } = useTilt();
+  return (
+  <div
+    ref={ref}
+    onMouseMove={onMove}
+    onMouseLeave={onLeave}
     data-aos="fade-up"
     data-aos-delay={aosDelay}
-    className={`relative rounded-2xl p-[1px] group transition-all duration-500 ${
-      project.isFlagship 
-        ? 'bg-gradient-to-br from-red-500/50 via-white/10 to-red-500/30 hover:from-red-500 hover:via-red-400/30 hover:to-red-500/60' 
+    style={{ transition: 'transform 0.25s ease-out', willChange: 'transform' }}
+    className={`relative rounded-2xl p-[1px] group ${
+      project.isFlagship
+        ? 'bg-gradient-to-br from-red-500/50 via-white/10 to-red-500/30 hover:from-red-500 hover:via-red-400/30 hover:to-red-500/60'
         : 'bg-white/10 hover:bg-white/20'
     }`}
   >
-    <div className={`rounded-2xl p-6 md:p-8 h-full backdrop-blur-md transition-all duration-500 ${
-      project.isFlagship 
-        ? 'bg-[#0f0f0f]/95 group-hover:bg-[#0f0f0f]/90' 
+    {/* cursor spotlight */}
+    <div
+      className="pointer-events-none absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10"
+      style={{ background: 'radial-gradient(240px circle at var(--mx,50%) var(--my,50%), rgba(255,42,42,0.14), transparent 60%)' }}
+    />
+    <div className={`relative rounded-2xl p-6 md:p-8 h-full backdrop-blur-md transition-colors duration-500 ${
+      project.isFlagship
+        ? 'bg-[#0f0f0f]/95 group-hover:bg-[#0f0f0f]/90'
         : 'bg-[#111111]/90 group-hover:bg-[#111111]/80'
     }`}>
       {/* Badge */}
@@ -118,7 +151,8 @@ const ProjectCard = ({ project, aosDelay }) => (
       </div>
     </div>
   </div>
-);
+  );
+};
 
 const Projects = () => {
   return (

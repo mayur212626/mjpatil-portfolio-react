@@ -17,11 +17,13 @@ import Contact from './components/Contact'
 import Footer from './components/Footer'
 import CommandPalette from './components/CommandPalette'
 import ScrollProgress from './components/ScrollProgress'
+import CustomCursor from './components/CustomCursor'
 
 function App() {
   return (
     <>
       <Preloader />
+      <CustomCursor />
       <ScrollProgress />
       <CommandPalette />
       <Navbar />
