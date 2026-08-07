@@ -6,6 +6,8 @@ import About from './components/About'
 import TechnicalSkills from './components/TechnicalSkills'
 import Services from './components/Services'
 import Projects from './components/Projects'
+import GitHubStats from './components/GitHubStats'
+import LiveDemo from './components/LiveDemo'
 import ContentCreator from './components/ContentCreator'
 import Internships from './components/Internships'
 import Leadership from './components/Leadership'
@@ -13,17 +15,23 @@ import Certificates from './components/Certificates'
 import SoftSkills from './components/SoftSkills'
 import Contact from './components/Contact'
 import Footer from './components/Footer'
+import CommandPalette from './components/CommandPalette'
+import ScrollProgress from './components/ScrollProgress'
 
 function App() {
   return (
     <>
       <Preloader />
+      <ScrollProgress />
+      <CommandPalette />
       <Navbar />
       <Hero />
       <About />
       <TechnicalSkills />
       <Services />
       <Projects />
+      <GitHubStats />
+      <LiveDemo />
       <ContentCreator />
       <Internships />
       <Leadership />
