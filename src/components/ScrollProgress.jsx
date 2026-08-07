@@ -18,7 +18,7 @@ const ScrollProgress = () => {
   return (
     <div className="fixed top-0 left-0 w-full h-[3px] z-[90] pointer-events-none">
       <div
-        className="h-full bg-gradient-to-r from-[#ff2a2a] via-[#ff7a45] to-[#ffd166]"
+        className="h-full bg-gradient-to-r from-[#6366f1] via-[#8b5cf6] to-[#d946ef]"
         style={{ width: `${p}%`, transition: 'width 80ms linear' }}
       />
     </div>

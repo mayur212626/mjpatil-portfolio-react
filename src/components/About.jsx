@@ -25,7 +25,7 @@ const TechTile = ({ name }) => (
 
 const About = () => {
   return (
-    <section id="about" className="bg-[#ff2a2a] pt-20 pb-40 px-6 md:px-12 w-full relative overflow-hidden font-sans">
+    <section id="about" className="bg-gradient-to-br from-[#6366f1] to-[#8b5cf6] pt-20 pb-40 px-6 md:px-12 w-full relative overflow-hidden font-sans">
       <div className="max-w-6xl mx-auto flex flex-col md:flex-row gap-16 items-start">
         
         {/* Left Side: ID Badge and Skills */}
@@ -61,7 +61,7 @@ const About = () => {
           
           <h2 className="text-4xl md:text-5xl font-black text-black mb-4">{aboutContent.heading}</h2>
           <p 
-            className="text-lg font-bold mb-12 leading-relaxed max-w-3xl text-red-50"
+            className="text-lg font-bold mb-12 leading-relaxed max-w-3xl text-indigo-50"
             dangerouslySetInnerHTML={{ __html: aboutContent.bio }}
           />
 

@@ -21,7 +21,7 @@ const PRESETS = {
 };
 
 const riskColor = (level) =>
-  level === 'HIGH' ? '#ff2a2a' : level === 'MEDIUM' ? '#f59e0b' : '#22c55e';
+  level === 'HIGH' ? '#6366f1' : level === 'MEDIUM' ? '#f59e0b' : '#22c55e';
 
 const LiveDemo = () => {
   const [values, setValues] = useState(
@@ -85,7 +85,7 @@ const LiveDemo = () => {
                 <button
                   key={p}
                   onClick={() => applyPreset(p)}
-                  className="px-4 py-1.5 rounded-full text-xs font-bold border border-white/20 text-white/70 hover:border-[#ff2a2a] hover:text-white transition-colors"
+                  className="px-4 py-1.5 rounded-full text-xs font-bold border border-white/20 text-white/70 hover:border-[#6366f1] hover:text-white transition-colors"
                 >
                   {p}
                 </button>
@@ -106,7 +106,7 @@ const LiveDemo = () => {
                     step={step}
                     value={values[k]}
                     onChange={(e) => setField(k, e.target.value)}
-                    className="w-full accent-[#ff2a2a] cursor-pointer"
+                    className="w-full accent-[#6366f1] cursor-pointer"
                   />
                 </div>
               ))}
@@ -115,7 +115,7 @@ const LiveDemo = () => {
             <button
               onClick={predict}
               disabled={status === 'loading' || status === 'waking'}
-              className="mt-8 w-full py-3.5 rounded-full bg-[#ff2a2a] text-white font-black tracking-wide uppercase text-sm hover:bg-[#e02020] hover:scale-[1.02] transition-all disabled:opacity-60 disabled:hover:scale-100"
+              className="mt-8 w-full py-3.5 rounded-full bg-[#6366f1] text-white font-black tracking-wide uppercase text-sm hover:bg-[#4f46e5] hover:scale-[1.02] transition-all disabled:opacity-60 disabled:hover:scale-100"
             >
               {status === 'loading' ? 'Predicting…' : status === 'waking' ? 'Waking model up (free tier)…' : 'Predict Risk'}
             </button>
