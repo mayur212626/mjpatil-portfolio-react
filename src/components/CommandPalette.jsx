@@ -131,7 +131,7 @@ const CommandPalette = () => {
                   key={c.label}
                   onMouseEnter={() => setSelected(i)}
                   onClick={() => runCommand(c)}
-                  className={`flex items-center justify-between px-5 py-2.5 text-sm cursor-pointer ${i === selected ? 'bg-[#6366f1]/15 text-white' : 'text-white/60'}`}
+                  className={`flex items-center justify-between px-5 py-2.5 text-sm cursor-pointer ${i === selected ? 'bg-[#ff2a2a]/15 text-white' : 'text-white/60'}`}
                 >
                   <span>{c.label}</span>
                   <span className="text-[10px] font-mono text-white/30">{c.hint}</span>
@@ -150,7 +150,7 @@ const CommandPalette = () => {
             <div className="px-4 py-3 max-h-72 overflow-y-auto whitespace-pre-wrap text-emerald-300/90 leading-relaxed">
               {termLines.map((l, i) => <div key={i}>{l}</div>)}
               <div className="flex items-center gap-2 text-white">
-                <span className="text-[#6366f1]">$</span>
+                <span className="text-[#ff2a2a]">$</span>
                 <input
                   ref={inputRef}
                   value={query}

@@ -5,11 +5,11 @@ const SkillProgress = ({ name, level }) => (
   <div className="mb-4">
     <div className="flex justify-between items-center mb-1">
       <span className="text-white text-sm font-semibold tracking-wide">{name}</span>
-      <span className="text-indigo-400 text-xs font-bold font-mono">{level}%</span>
+      <span className="text-red-400 text-xs font-bold font-mono">{level}%</span>
     </div>
     <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden border border-white/5">
       <div 
-        className="h-full bg-gradient-to-r from-indigo-500 to-violet-500 rounded-full transition-all duration-1000 ease-out"
+        className="h-full bg-gradient-to-r from-red-600 to-red-400 rounded-full transition-all duration-1000 ease-out"
         style={{ width: `${level}%` }}
       />
     </div>
@@ -20,7 +20,7 @@ const SkillCard = ({ category, index }) => (
   <div 
     data-aos="fade-up"
     data-aos-delay={index * 100}
-    className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 hover:scale-[1.02] hover:border-indigo-500/30 hover:shadow-[0_20px_50px_rgba(99, 102, 241,0.1)] transition-all duration-500"
+    className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 hover:scale-[1.02] hover:border-red-500/30 hover:shadow-[0_20px_50px_rgba(255,42,42,0.1)] transition-all duration-500"
   >
     <h3 className="text-white text-lg font-black tracking-tight mb-6 pb-2 border-b border-white/10 uppercase">
       {category.title}
@@ -37,8 +37,8 @@ const TechnicalSkills = () => {
   return (
     <section id="skills" className="bg-[#0a0a0a] pt-24 pb-28 px-6 md:px-12 w-full relative overflow-hidden font-sans">
       {/* Background visual elements */}
-      <div className="absolute top-1/4 left-10 w-96 h-96 bg-indigo-600/10 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-1/4 right-10 w-96 h-96 bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-1/4 left-10 w-96 h-96 bg-red-600/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-1/4 right-10 w-96 h-96 bg-red-500/10 rounded-full blur-[120px] pointer-events-none" />
 
       <div className="max-w-6xl mx-auto relative z-10">
         

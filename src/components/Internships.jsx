@@ -19,7 +19,7 @@ const InternshipCard = ({ intern, index }) => (
       <h3 className="text-white text-2xl font-black mb-1 tracking-tight">
         {intern.role}
       </h3>
-      <p className="text-indigo-200 text-sm font-black tracking-wide mb-6 uppercase">
+      <p className="text-red-200 text-sm font-black tracking-wide mb-6 uppercase">
         {intern.organization}
       </p>
 
@@ -53,7 +53,7 @@ const InternshipCard = ({ intern, index }) => (
 
 const Internships = () => {
   return (
-    <section className="bg-gradient-to-br from-[#6366f1] to-[#8b5cf6] pt-24 pb-32 px-6 md:px-12 w-full relative overflow-hidden font-sans">
+    <section className="bg-[#ff2a2a] pt-24 pb-32 px-6 md:px-12 w-full relative overflow-hidden font-sans">
       
       {/* Torn paper divider at top */}
       <div className="absolute top-0 left-0 w-full pointer-events-none z-10 transform -translate-y-[1px] rotate-180">
@@ -69,7 +69,7 @@ const Internships = () => {
           <h2 className="text-4xl md:text-5xl font-black text-black mb-4 tracking-tight uppercase">
             Work Experience
           </h2>
-          <p className="text-indigo-100 text-base md:text-lg font-semibold max-w-lg mx-auto">
+          <p className="text-red-100 text-base md:text-lg font-semibold max-w-lg mx-auto">
             Hands-on experience where I applied data and analytics skills to real-world problems.
           </p>
         </div>

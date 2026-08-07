@@ -19,7 +19,7 @@ const ProjectCard = ({ project, aosDelay }) => (
     data-aos-delay={aosDelay}
     className={`relative rounded-2xl p-[1px] group transition-all duration-500 ${
       project.isFlagship 
-        ? 'bg-gradient-to-br from-indigo-500/50 via-white/10 to-indigo-500/30 hover:from-indigo-500 hover:via-indigo-400/30 hover:to-indigo-500/60' 
+        ? 'bg-gradient-to-br from-red-500/50 via-white/10 to-red-500/30 hover:from-red-500 hover:via-red-400/30 hover:to-red-500/60' 
         : 'bg-white/10 hover:bg-white/20'
     }`}
   >
@@ -30,7 +30,7 @@ const ProjectCard = ({ project, aosDelay }) => (
     }`}>
       {/* Badge */}
       {project.badge && (
-        <span className="inline-block text-xs font-bold tracking-widest uppercase text-indigo-400 bg-indigo-500/10 px-3 py-1 rounded-full border border-indigo-500/20 mb-4">
+        <span className="inline-block text-xs font-bold tracking-widest uppercase text-red-400 bg-red-500/10 px-3 py-1 rounded-full border border-red-500/20 mb-4">
           {project.badge}
         </span>
       )}
@@ -51,7 +51,7 @@ const ProjectCard = ({ project, aosDelay }) => (
         {project.techTags.map((tag) => (
           <span 
             key={tag}
-            className="px-3 py-1 text-xs font-bold text-white/70 bg-white/5 rounded-full border border-white/10 hover:bg-indigo-500/20 hover:border-indigo-500/30 hover:text-indigo-300 transition-all duration-300 cursor-default"
+            className="px-3 py-1 text-xs font-bold text-white/70 bg-white/5 rounded-full border border-white/10 hover:bg-red-500/20 hover:border-red-500/30 hover:text-red-300 transition-all duration-300 cursor-default"
           >
             {tag}
           </span>
@@ -81,7 +81,7 @@ const ProjectCard = ({ project, aosDelay }) => (
             rel={project.links.demo ? "noopener noreferrer" : undefined}
             className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${
               project.links.demo 
-                ? 'bg-[#6366f1] text-white hover:bg-indigo-600 hover:shadow-[0_0_20px_rgba(99, 102, 241,0.4)]' 
+                ? 'bg-[#ff2a2a] text-white hover:bg-red-600 hover:shadow-[0_0_20px_rgba(255,42,42,0.4)]' 
                 : 'bg-white/5 text-white/40 border border-white/10 cursor-not-allowed'
             }`}
           >
@@ -96,7 +96,7 @@ const ProjectCard = ({ project, aosDelay }) => (
             href={project.links.frontendDemo}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#6366f1] text-white text-sm font-semibold hover:bg-indigo-600 hover:shadow-[0_0_20px_rgba(99, 102, 241,0.4)] transition-all duration-300"
+            className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#ff2a2a] text-white text-sm font-semibold hover:bg-red-600 hover:shadow-[0_0_20px_rgba(255,42,42,0.4)] transition-all duration-300"
           >
             <ExternalLinkIcon />
             Frontend Demo
