@@ -108,10 +108,10 @@ const ProjectCard = ({ project, aosDelay }) => {
 
         {/* Live Demo (single) */}
         {project.links.demo !== undefined && (
-          <a 
+          <a
             href={project.links.demo || '#'}
-            target={project.links.demo ? "_blank" : undefined}
-            rel={project.links.demo ? "noopener noreferrer" : undefined}
+            target={project.links.demo && !project.links.demo.startsWith('#') ? "_blank" : undefined}
+            rel={project.links.demo && !project.links.demo.startsWith('#') ? "noopener noreferrer" : undefined}
             className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${
               project.links.demo 
                 ? 'bg-[#ff2a2a] text-white hover:bg-red-600 hover:shadow-[0_0_20px_rgba(255,42,42,0.4)]' 
