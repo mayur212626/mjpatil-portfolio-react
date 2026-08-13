@@ -1,4 +1,3 @@
-import React from 'react'
 import Preloader from './components/Preloader'
 import Navbar from './components/Navbar'
 import Hero from './components/Hero'
@@ -8,6 +7,7 @@ import Services from './components/Services'
 import Projects from './components/Projects'
 import GitHubStats from './components/GitHubStats'
 import LiveDemo from './components/LiveDemo'
+import AnomalyLiveDemo from './components/AnomalyLiveDemo'
 import ContentCreator from './components/ContentCreator'
 import Internships from './components/Internships'
 import Leadership from './components/Leadership'
@@ -32,6 +32,7 @@ function App() {
       <Projects />
       <GitHubStats />
       <LiveDemo />
+      <AnomalyLiveDemo />
       <ContentCreator />
       <Internships />
       <Leadership />

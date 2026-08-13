@@ -233,7 +233,7 @@ export const projects = [
     techTags: ["PySpark", "Scikit-learn", "Isolation Forest", "MLflow", "FastAPI", "SHAP"],
     links: {
       github: "https://github.com/mayur212626/anomaly-detection",
-      demo: null,
+      demo: "#anomaly",
     },
     isFlagship: true,
   },
