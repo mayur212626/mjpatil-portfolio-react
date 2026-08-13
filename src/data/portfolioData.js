@@ -247,7 +247,7 @@ export const projects = [
     techTags: ["PyTorch", "Scikit-learn", "FastAPI", "Docker", "Streamlit", "CI/CD"],
     links: {
       github: "https://github.com/mayur212626/clinical-lab-predictor",
-      demo: "https://clinical-lab-predictor.onrender.com",
+      demo: "#demo",
     },
     isFlagship: false,
   },
