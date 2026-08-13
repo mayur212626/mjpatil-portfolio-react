@@ -289,7 +289,7 @@ export const projects = [
     techTags: ["Python", "Bayesian Modeling", "Monte Carlo", "Dixon-Coles"],
     links: {
       github: "https://github.com/mayur212626/fifa-wc2026-predictor",
-      demo: null,
+      demo: "https://wc2026-title-race.onrender.com",
     },
     isFlagship: false,
   },
