@@ -1,8 +1,11 @@
 import React, { useEffect, useRef } from 'react';
 
-// Interactive particle-network canvas for the hero background.
-// Dark base, drifting nodes, lines between nearby ones, gentle mouse repulsion.
-// Pauses when the tab is hidden; respects reduced-motion.
+// Colorful particle-network hero background with depth-of-field bokeh.
+// Multi-color nodes (red / blue / orange / white), big soft foreground
+// bokeh + small sharp background dots, connecting lines, mouse parallax.
+// Pauses when hidden; respects reduced-motion.
+const PALETTE = ['#ff2a2a', '#ff2a2a', '#ff3b3b', '#3b82f6', '#f59e0b', '#ffffff', '#ffffff'];
+
 const HeroBackground = () => {
   const ref = useRef(null);
 
@@ -11,74 +14,102 @@ const HeroBackground = () => {
     const canvas = ref.current;
     const ctx = canvas.getContext('2d');
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    let raf, W, H, particles = [];
-    const mouse = { x: -9999, y: -9999 };
+    let raf, W, H, nodes = [], bokeh = [];
+    const mouse = { x: 0, y: 0, tx: 0, ty: 0 };
 
-    const resize = () => {
-      W = canvas.clientWidth; H = canvas.clientHeight;
+    const rand = (a, b) => a + Math.random() * (b - a);
+    const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+
+    const build = () => {
+      W = canvas.clientWidth || window.innerWidth;
+      H = canvas.clientHeight || window.innerHeight;
       canvas.width = W * dpr; canvas.height = H * dpr;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      // density scales with area, capped for perf
-      const count = Math.min(90, Math.floor((W * H) / 16000));
-      particles = Array.from({ length: count }, () => ({
-        x: Math.random() * W,
-        y: Math.random() * H,
-        vx: (Math.random() - 0.5) * 0.4,
-        vy: (Math.random() - 0.5) * 0.4,
-        r: Math.random() * 1.8 + 0.8,
-      }));
-    };
-    resize();
-    window.addEventListener('resize', resize);
+      mouse.x = mouse.tx = W / 2; mouse.y = mouse.ty = H / 2;
 
-    const onMove = (e) => { mouse.x = e.clientX; mouse.y = e.clientY; };
-    const onLeave = () => { mouse.x = -9999; mouse.y = -9999; };
+      // sharp connecting nodes
+      const nCount = Math.min(80, Math.floor((W * H) / 17000));
+      nodes = Array.from({ length: nCount }, () => {
+        const z = rand(0.2, 1);           // depth: bigger/faster when near
+        return {
+          x: Math.random() * W, y: Math.random() * H,
+          vx: rand(-0.35, 0.35), vy: rand(-0.35, 0.35),
+          z, r: 0.8 + z * 2.2, color: pick(PALETTE),
+        };
+      });
+
+      // soft out-of-focus bokeh (foreground blur)
+      const bCount = Math.min(16, Math.floor((W * H) / 90000));
+      bokeh = Array.from({ length: bCount }, () => {
+        const z = rand(0.7, 1);
+        return {
+          x: Math.random() * W, y: Math.random() * H,
+          vx: rand(-0.15, 0.15), vy: rand(-0.15, 0.15),
+          z, r: rand(10, 30), color: pick(PALETTE), alpha: rand(0.12, 0.32),
+        };
+      });
+    };
+    build();
+    window.addEventListener('resize', build);
+
+    const onMove = (e) => { mouse.tx = e.clientX; mouse.ty = e.clientY; };
     window.addEventListener('mousemove', onMove);
-    window.addEventListener('mouseout', onLeave);
 
     const draw = () => {
       ctx.clearRect(0, 0, W, H);
-      // update + draw nodes
-      for (const p of particles) {
-        // mouse repulsion
-        const dx = p.x - mouse.x, dy = p.y - mouse.y;
-        const d2 = dx * dx + dy * dy;
-        if (d2 < 14000) {
-          const f = (14000 - d2) / 14000 * 0.9;
-          const d = Math.sqrt(d2) || 1;
-          p.vx += (dx / d) * f * 0.15;
-          p.vy += (dy / d) * f * 0.15;
-        }
-        p.x += p.vx; p.y += p.vy;
-        p.vx *= 0.99; p.vy *= 0.99;
-        // wrap
-        if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
-        if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
+      // ease mouse for parallax
+      mouse.x += (mouse.tx - mouse.x) * 0.05;
+      mouse.y += (mouse.ty - mouse.y) * 0.05;
+      const px = (mouse.x - W / 2) / W;   // -0.5..0.5
+      const py = (mouse.y - H / 2) / H;
+
+      // ── bokeh layer (soft, behind) ──
+      for (const b of bokeh) {
+        b.x += b.vx; b.y += b.vy;
+        if (b.x < -40) b.x = W + 40; if (b.x > W + 40) b.x = -40;
+        if (b.y < -40) b.y = H + 40; if (b.y > H + 40) b.y = -40;
+        const ox = px * b.z * 60, oy = py * b.z * 60; // parallax
+        const g = ctx.createRadialGradient(b.x + ox, b.y + oy, 0, b.x + ox, b.y + oy, b.r);
+        g.addColorStop(0, b.color + Math.round(b.alpha * 255).toString(16).padStart(2, '0'));
+        g.addColorStop(1, b.color + '00');
+        ctx.fillStyle = g;
         ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r, 0, 6.283);
-        ctx.fillStyle = 'rgba(255,255,255,0.55)';
+        ctx.arc(b.x + ox, b.y + oy, b.r, 0, 6.283);
         ctx.fill();
       }
-      // connections
-      for (let i = 0; i < particles.length; i++) {
-        for (let j = i + 1; j < particles.length; j++) {
-          const a = particles[i], b = particles[j];
-          const dx = a.x - b.x, dy = a.y - b.y;
+
+      // ── connections ──
+      for (let i = 0; i < nodes.length; i++) {
+        for (let j = i + 1; j < nodes.length; j++) {
+          const a = nodes[i], c = nodes[j];
+          const dx = a.x - c.x, dy = a.y - c.y;
           const d2 = dx * dx + dy * dy;
-          if (d2 < 15000) {
-            const alpha = (1 - d2 / 15000);
-            // tint lines toward red near the cursor
-            const near = Math.min(a.x, b.x) > mouse.x - 200 && Math.max(a.x, b.x) < mouse.x + 200;
-            ctx.strokeStyle = near
-              ? `rgba(255,42,42,${alpha * 0.35})`
-              : `rgba(255,255,255,${alpha * 0.12})`;
-            ctx.lineWidth = 0.6;
+          if (d2 < 16000) {
+            const alpha = (1 - d2 / 16000) * 0.16;
+            ctx.strokeStyle = `rgba(255,255,255,${alpha})`;
+            ctx.lineWidth = 0.5;
             ctx.beginPath();
-            ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y);
+            ctx.moveTo(a.x + px * a.z * 40, a.y + py * a.z * 40);
+            ctx.lineTo(c.x + px * c.z * 40, c.y + py * c.z * 40);
             ctx.stroke();
           }
         }
       }
+
+      // ── sharp nodes (colored, glowing) ──
+      for (const n of nodes) {
+        n.x += n.vx; n.y += n.vy;
+        if (n.x < 0) n.x = W; if (n.x > W) n.x = 0;
+        if (n.y < 0) n.y = H; if (n.y > H) n.y = 0;
+        const ox = px * n.z * 40, oy = py * n.z * 40;
+        ctx.beginPath();
+        ctx.arc(n.x + ox, n.y + oy, n.r, 0, 6.283);
+        ctx.fillStyle = n.color;
+        ctx.shadowColor = n.color;
+        ctx.shadowBlur = 6 + n.z * 8;
+        ctx.fill();
+      }
+      ctx.shadowBlur = 0;
       raf = requestAnimationFrame(draw);
     };
     draw();
@@ -91,21 +122,19 @@ const HeroBackground = () => {
 
     return () => {
       cancelAnimationFrame(raf);
-      window.removeEventListener('resize', resize);
+      window.removeEventListener('resize', build);
       window.removeEventListener('mousemove', onMove);
-      window.removeEventListener('mouseout', onLeave);
       document.removeEventListener('visibilitychange', onVis);
     };
   }, []);
 
   return (
     <div className="absolute inset-0 z-0 overflow-hidden bg-[#07080b]">
-      {/* radial accent glows */}
-      <div className="absolute -top-1/4 left-1/4 w-[600px] h-[600px] rounded-full bg-[#ff2a2a]/10 blur-[130px]" />
-      <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] rounded-full bg-indigo-500/10 blur-[130px]" />
-      {/* faint grid */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff08_1px,transparent_1px),linear-gradient(to_bottom,#ffffff08_1px,transparent_1px)] bg-[size:70px_70px] [mask-image:radial-gradient(ellipse_at_center,#000_40%,transparent_85%)]" />
+      {/* deep radial vignette so nodes pop */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_60%_45%,#12131a_0%,#07080b_70%)]" />
       <canvas ref={ref} className="absolute inset-0 w-full h-full" />
+      {/* keep text side readable */}
+      <div className="absolute inset-0 bg-gradient-to-r from-[#07080b]/85 via-[#07080b]/30 to-transparent" />
     </div>
   );
 };
