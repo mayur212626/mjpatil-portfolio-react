@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
-import heroPoster from '../assets/hero video/hero-poster.jpg';
+import HeroBackground from './HeroBackground';
 import { heroContent, personalInfo, socialLinks } from '../data/portfolioData';
 
 const Hero = () => {
@@ -14,15 +14,11 @@ const Hero = () => {
   }, []);
 
   return (
-    <section className="relative w-full h-screen overflow-hidden bg-black">
-      {/* Background Photo with slow Ken-Burns zoom */}
-      <img
-        src={heroPoster}
-        alt={`${personalInfo.name} — ${personalInfo.title}`}
-        className="absolute top-0 left-0 w-full h-full object-cover object-[center_25%] z-0 hero-kenburns"
-      />
-      {/* Readability gradient overlay */}
-      <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/80 via-black/25 to-black/40" />
+    <section className="relative w-full h-screen overflow-hidden bg-[#07080b]">
+      {/* Animated particle-network background */}
+      <HeroBackground />
+      {/* subtle bottom fade for depth */}
+      <div className="absolute inset-0 z-10 pointer-events-none bg-gradient-to-t from-[#07080b] via-transparent to-transparent" />
 
       {/* Left Floating Social Bar for Large Screens */}
       <div className="hidden lg:flex flex-col gap-6 fixed left-6 top-1/2 -translate-y-1/2 z-50 mix-blend-difference">
@@ -88,7 +84,7 @@ const Hero = () => {
             data-aos="fade-up"
             className="text-white text-3xl md:text-5xl font-bold mb-4 tracking-tight"
           >
-            {heroContent.greeting}, <br /> <span className="text-transparent [-webkit-text-stroke:1.5px_black]">{heroContent.titleHighlight}</span>
+            {heroContent.greeting}, <br /> <span className="bg-gradient-to-r from-[#ff2a2a] via-[#ff6a6a] to-white bg-clip-text text-transparent">{heroContent.titleHighlight}</span>
           </h1>
 
           {/* Subheading */}

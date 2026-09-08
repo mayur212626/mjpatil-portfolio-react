@@ -16,7 +16,7 @@ const GitHubStats = () => {
         const stars = repos.reduce((s, r) => s + (r.stargazers_count || 0), 0);
         const langs = {};
         repos.forEach((r) => { if (r.language) langs[r.language] = (langs[r.language] || 0) + 1; });
-        const topLang = Object.entries(langs).sort((a, b) => b[1] - a[1])[0]?.[0] || '—';
+        const topLang = Object.entries(langs).sort((a, b) => b[1] - a[1])[0]?.[0] || 'N/A';
         setStats({ repos: u.public_repos, followers: u.followers, stars, topLang });
       })
       .catch(() => {});

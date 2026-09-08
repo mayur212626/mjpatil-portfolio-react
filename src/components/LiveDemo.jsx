@@ -71,7 +71,7 @@ const LiveDemo = () => {
             Try My Deployed Model
           </h2>
           <p className="text-white/50 text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
-            This calls my real diabetes-risk model — Random Forest + PyTorch, AUC-ROC 0.96 — live on its FastAPI service. Move the sliders, hit predict.
+            This calls my real diabetes-risk model (Random Forest + PyTorch, AUC-ROC 0.96), live on its FastAPI service. Move the sliders, hit predict.
           </p>
           <p className="text-white/30 text-xs mt-2">Research prototype · not medical advice</p>
         </div>
@@ -124,7 +124,7 @@ const LiveDemo = () => {
           {/* Result */}
           <div data-aos="fade-left" className="bg-white/5 border border-white/10 rounded-2xl p-6 md:p-8 min-h-[320px] flex flex-col items-center justify-center text-center">
             {status === 'error' && (
-              <p className="text-white/60 text-sm">API unreachable — the free-tier host may be cold. Try again in ~30s.</p>
+              <p className="text-white/60 text-sm">API unreachable. The free-tier host may be cold; try again in ~30s.</p>
             )}
             {(status === 'idle' || status === 'loading' || status === 'waking') && !result && (
               <div className="text-white/40 text-sm leading-relaxed">

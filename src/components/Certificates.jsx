@@ -1,25 +1,32 @@
 import React from 'react';
 import { certificates } from '../data/portfolioData';
 
-const CertificateCard = ({ cert, aosDelay }) => (
-  <div 
-    data-aos="zoom-in"
-    data-aos-delay={aosDelay}
-    className="bg-black/20 backdrop-blur-sm rounded-2xl p-5 border border-white/10 hover:border-white/25 hover:scale-105 hover:shadow-[0_15px_40px_rgba(0,0,0,0.3)] transition-all duration-500 cursor-default group"
-  >
-    <div className="flex items-start gap-4">
-      <span className="text-2xl mt-0.5 group-hover:scale-110 transition-transform duration-300">{cert.icon}</span>
-      <div>
-        <h3 className="text-white font-bold text-sm md:text-base leading-tight mb-1 group-hover:text-white transition-colors">
-          {cert.name}
-        </h3>
-        <p className="text-white/50 text-xs font-semibold uppercase tracking-wider">
-          {cert.issuer}
-        </p>
+const CertificateCard = ({ cert, aosDelay }) => {
+  const Tag = cert.link ? 'a' : 'div';
+  const linkProps = cert.link
+    ? { href: cert.link, target: '_blank', rel: 'noopener noreferrer' }
+    : {};
+  return (
+    <Tag
+      {...linkProps}
+      data-aos="zoom-in"
+      data-aos-delay={aosDelay}
+      className={`block bg-black/20 backdrop-blur-sm rounded-2xl p-5 border border-white/10 hover:border-white/25 hover:scale-105 hover:shadow-[0_15px_40px_rgba(0,0,0,0.3)] transition-all duration-500 group ${cert.link ? 'cursor-pointer' : 'cursor-default'}`}
+    >
+      <div className="flex items-start gap-4">
+        <span className="text-2xl mt-0.5 group-hover:scale-110 transition-transform duration-300">{cert.icon}</span>
+        <div>
+          <h3 className="text-white font-bold text-sm md:text-base leading-tight mb-1 group-hover:text-white transition-colors">
+            {cert.name}
+          </h3>
+          <p className="text-white/50 text-xs font-semibold uppercase tracking-wider">
+            {cert.issuer}
+          </p>
+        </div>
       </div>
-    </div>
-  </div>
-);
+    </Tag>
+  );
+};
 
 const Certificates = () => {
   return (

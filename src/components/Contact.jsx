@@ -210,7 +210,7 @@ const Contact = () => {
                       </span>
                     ) : status === 'error' ? (
                       <span className="flex items-center gap-2">
-                        Failed — Try Again
+                        Failed. Try Again
                       </span>
                     ) : 'Send Message'}
                     

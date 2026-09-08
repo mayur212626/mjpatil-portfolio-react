@@ -19,7 +19,7 @@ const NAV_COMMANDS = [
 
 const TERM_RESPONSES = {
   help: 'commands: whoami · ls projects · skills · contact · resume · clear · exit',
-  whoami: `${personalInfo.name} — ${personalInfo.title}\nM.S. Data Science @ GWU · ${personalInfo.location}`,
+  whoami: `${personalInfo.name}, ${personalInfo.title}\nM.S. Data Science @ GWU · ${personalInfo.location}`,
   'ls projects': 'anomaly-detection/     540x critical-error lift\nclinical-lab-predictor/  AUC-ROC 0.9618 · live API\nsignal-ai/             5-agent LLM pipeline\nstock-lstm/            MAPE 7.19% on SageMaker\nfifa-wc2026/           Bayesian Monte Carlo\nais-ships/             358K records · PySpark',
   ls: 'projects/  research/  skills/  resume.pdf',
   skills: 'Python · SQL · PySpark · PyTorch · Scikit-learn · XGBoost · AWS · MLflow · Docker · FastAPI',
@@ -78,7 +78,7 @@ const CommandPalette = () => {
     if (!cmd) return;
     if (cmd === 'exit') { close(); return; }
     if (cmd === 'clear') { setTermLines([]); setQuery(''); return; }
-    const out = TERM_RESPONSES[cmd] || `command not found: ${cmd} — try \`help\``;
+    const out = TERM_RESPONSES[cmd] || `command not found: ${cmd}. Try \`help\``;
     setTermLines((l) => [...l, `$ ${raw}`, out]);
     if (cmd === 'resume') {
       const a = document.createElement('a'); a.href = personalInfo.resumeUrl; a.download = ''; a.click();
@@ -145,7 +145,7 @@ const CommandPalette = () => {
               <span className="w-2.5 h-2.5 rounded-full bg-[#ff5f57]" />
               <span className="w-2.5 h-2.5 rounded-full bg-[#febc2e]" />
               <span className="w-2.5 h-2.5 rounded-full bg-[#28c840]" />
-              <span className="text-white/40 text-xs ml-2">mayur@mjpatil.com — zsh</span>
+              <span className="text-white/40 text-xs ml-2">mayur@mjpatil.com · zsh</span>
             </div>
             <div className="px-4 py-3 max-h-72 overflow-y-auto whitespace-pre-wrap text-emerald-300/90 leading-relaxed">
               {termLines.map((l, i) => <div key={i}>{l}</div>)}

@@ -30,7 +30,7 @@ const SCENARIOS = {
     },
   },
   'Admin recon': {
-    blurb: 'Repeated /admin probes plus 4xx scanning — credential-hunting pattern.',
+    blurb: 'Repeated /admin probes plus 4xx scanning: credential-hunting pattern.',
     entry: {
       ip: '198.51.100.9', hour: 2, status: 403, bytes: 512,
       is_error: 1, is_critical: 0, is_4xx: 1, is_5xx: 0,
@@ -91,7 +91,7 @@ const AnomalyLiveDemo = () => {
             Score a Log for Anomalies
           </h2>
           <p className="text-white/50 text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
-            This calls my real Log Anomaly Detection API — an Isolation Forest
+            This calls my real Log Anomaly Detection API, an Isolation Forest
             ensemble trained on 500K HTTP logs, 20 behavioral features per IP.
             Pick an attack scenario, hit score, see the live verdict.
           </p>
@@ -148,7 +148,7 @@ const AnomalyLiveDemo = () => {
           {/* Result */}
           <div data-aos="fade-left" className="bg-white/5 border border-white/10 rounded-2xl p-6 md:p-8 min-h-[340px] flex flex-col items-center justify-center text-center">
             {status === 'error' && (
-              <p className="text-white/60 text-sm">API unreachable — the free-tier host may be cold. Try again in ~30s.</p>
+              <p className="text-white/60 text-sm">API unreachable. The free-tier host may be cold; try again in ~30s.</p>
             )}
             {(status === 'idle' || status === 'loading' || status === 'waking') && !result && (
               <div className="text-white/40 text-sm leading-relaxed">
