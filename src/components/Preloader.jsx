@@ -3,6 +3,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import * as THREE from 'three';
 import { personalInfo } from '../data/portfolioData';
 
+// Name letters cycle the brain's own palette so they match the cloud.
+const NAME_COLORS = ['#ff2a2a', '#3b82f6', '#f59e0b', '#a855f7', '#ffffff'];
+
 // ── Crazy 3D opening: neural brain point-cloud with firing synapses.
 // Camera orbits, then dives into the brain and dissolves into the site.
 function BrainScene({ onDone }) {
@@ -184,19 +187,42 @@ const Preloader = () => {
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,#0e0f18_0%,#05060a_70%)]" />
           <BrainScene onDone={() => setIsLoading(false)} />
 
-          {/* caption */}
-          <motion.div
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-            transition={{ delay: 0.4, duration: 0.8 }}
-            className="relative z-10 text-center pointer-events-none"
-          >
-            <div className="text-white/90 font-black text-2xl md:text-4xl tracking-tight">
-              {personalInfo.brandName}<span className="text-[#ff2a2a]">.</span>
+          {/* caption — per-letter pop, colored from the brain palette */}
+          <div className="relative z-10 text-center pointer-events-none px-6">
+            {/* soft dark backing so the name reads over the colorful brain */}
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[200%] bg-[radial-gradient(ellipse_at_center,#05060aee_0%,#05060a88_45%,transparent_75%)]" />
+            <div className="relative font-black text-3xl md:text-5xl tracking-tight [perspective:600px]">
+              {personalInfo.brandName.split('').map((ch, i) => (
+                <motion.span
+                  key={i}
+                  initial={{ opacity: 0, y: 28, scale: 0.4, rotateX: -70 }}
+                  animate={{ opacity: 1, y: 0, scale: 1, rotateX: 0 }}
+                  transition={{ delay: 0.5 + i * 0.06, type: 'spring', stiffness: 420, damping: 13 }}
+                  style={{
+                    display: 'inline-block',
+                    color: ch === ' ' ? 'transparent' : NAME_COLORS[i % NAME_COLORS.length],
+                    textShadow: ch === ' ' ? 'none' : '0 0 22px currentColor',
+                  }}
+                >
+                  {ch === ' ' ? ' ' : ch}
+                </motion.span>
+              ))}
+              <motion.span
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{ opacity: 1, scale: [0, 1.6, 1] }}
+                transition={{ delay: 0.5 + personalInfo.brandName.length * 0.06, duration: 0.5 }}
+                style={{ display: 'inline-block', color: '#ff2a2a', textShadow: '0 0 22px #ff2a2a' }}
+              >.</motion.span>
             </div>
-            <div className="mt-3 font-mono text-[11px] md:text-xs text-[#ff2a2a] tracking-[0.3em] uppercase animate-pulse">
+            <motion.div
+              initial={{ opacity: 0, letterSpacing: '0.6em' }}
+              animate={{ opacity: 1, letterSpacing: '0.3em' }}
+              transition={{ delay: 1.1, duration: 0.7 }}
+              className="relative mt-4 font-mono text-[11px] md:text-xs text-white/45 uppercase"
+            >
               initializing neural net
-            </div>
-          </motion.div>
+            </motion.div>
+          </div>
 
           <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-white/25 text-[10px] font-mono tracking-widest uppercase">
             click to skip
