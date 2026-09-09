@@ -1,226 +1,146 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import * as THREE from 'three';
+import { personalInfo } from '../data/portfolioData';
 
-// ── Crazy 3D opening ──────────────────────────────────────────────
-// Neurons fly in from deep space, assemble into "MAYUR PATIL", morph
-// into "DATA SCIENTIST", synapses firing between them, then explode
-// outward and dissolve into the site.
-//
-// Colour spectrum (checked on dark): cyan → blue → violet → pink → coral.
-const GRAD = [
-  [0.00, [0, 229, 255]],   // cyan
-  [0.28, [79, 140, 255]],  // blue
-  [0.55, [168, 85, 247]],  // violet
-  [0.80, [255, 59, 212]],  // pink
-  [1.00, [255, 90, 60]],   // coral (ties to brand red)
-];
-const gradColor = (t) => {
-  t = Math.max(0, Math.min(1, t));
-  for (let i = 0; i < GRAD.length - 1; i++) {
-    const [t0, c0] = GRAD[i], [t1, c1] = GRAD[i + 1];
-    if (t >= t0 && t <= t1) {
-      const f = (t - t0) / (t1 - t0);
-      return [
-        (c0[0] + (c1[0] - c0[0]) * f) / 255,
-        (c0[1] + (c1[1] - c0[1]) * f) / 255,
-        (c0[2] + (c1[2] - c0[2]) * f) / 255,
-      ];
-    }
-  }
-  return [1, 1, 1];
-};
-
-// Sample N target positions (world units) from rendered text pixels.
-function textTargets(text, N, worldW, weight = 800) {
-  const cw = 1400, ch = 360;
-  const cvs = document.createElement('canvas'); cvs.width = cw; cvs.height = ch;
-  const ctx = cvs.getContext('2d');
-  ctx.fillStyle = '#000'; ctx.fillRect(0, 0, cw, ch);
-  ctx.fillStyle = '#fff';
-  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  // shrink font until it fits
-  let size = 230;
-  ctx.font = `900 ${size}px Inter, Arial, sans-serif`;
-  while (ctx.measureText(text).width > cw * 0.92 && size > 40) {
-    size -= 10; ctx.font = `900 ${size}px Inter, Arial, sans-serif`;
-  }
-  ctx.fillText(text, cw / 2, ch / 2);
-  const data = ctx.getImageData(0, 0, cw, ch).data;
-  const filled = [];
-  for (let y = 0; y < ch; y += 3) {
-    for (let x = 0; x < cw; x += 3) {
-      if (data[(y * cw + x) * 4] > 128) filled.push([x, y]);
-    }
-  }
-  const out = new Float32Array(N * 3);
-  const aspect = ch / cw;
-  for (let i = 0; i < N; i++) {
-    const p = filled.length ? filled[(Math.random() * filled.length) | 0] : [cw / 2, ch / 2];
-    out[i * 3]     = (p[0] / cw - 0.5) * worldW;
-    out[i * 3 + 1] = -(p[1] / ch - 0.5) * worldW * aspect;
-    out[i * 3 + 2] = (Math.random() - 0.5) * 5;
-  }
-  return out;
-}
-
-// Nearest-neighbour edges for the synapse lines (grid-hashed).
-function knnEdges(targets, N, cell = 3.2, kMax = 2) {
-  const grid = new Map();
-  const key = (x, y) => `${Math.floor(x / cell)},${Math.floor(y / cell)}`;
-  for (let i = 0; i < N; i++) {
-    const k = key(targets[i * 3], targets[i * 3 + 1]);
-    (grid.get(k) || grid.set(k, []).get(k)).push(i);
-  }
-  const edges = [];
-  for (let i = 0; i < N; i++) {
-    const x = targets[i * 3], y = targets[i * 3 + 1];
-    const cxi = Math.floor(x / cell), cyi = Math.floor(y / cell);
-    let best = [];
-    for (let gx = -1; gx <= 1; gx++) for (let gy = -1; gy <= 1; gy++) {
-      const arr = grid.get(`${cxi + gx},${cyi + gy}`); if (!arr) continue;
-      for (const j of arr) {
-        if (j <= i) continue;
-        const dx = x - targets[j * 3], dy = y - targets[j * 3 + 1];
-        best.push([dx * dx + dy * dy, j]);
-      }
-    }
-    best.sort((a, b) => a[0] - b[0]);
-    for (let k = 0; k < Math.min(kMax, best.length); k++) edges.push(i, best[k][1]);
-  }
-  return edges;
-}
-
-function NeuronScene({ onDone }) {
+// ── Crazy 3D opening: neural brain point-cloud with firing synapses.
+// Camera orbits, then dives into the brain and dissolves into the site.
+function BrainScene({ onDone }) {
   const mountRef = useRef(null);
+
   useEffect(() => {
     const mount = mountRef.current;
     const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x05060a, 0.015);
+    scene.fog = new THREE.FogExp2(0x05060a, 0.02);
     const W = () => mount.clientWidth || window.innerWidth;
     const H = () => mount.clientHeight || window.innerHeight;
+
     const camera = new THREE.PerspectiveCamera(60, W() / H(), 0.1, 400);
-    camera.position.set(0, 0, 52);
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     renderer.setSize(W(), H());
     renderer.setClearColor(0x000000, 0);
     mount.appendChild(renderer.domElement);
 
-    // sprite
-    const s = 64, sc = document.createElement('canvas'); sc.width = sc.height = s;
-    const sx = sc.getContext('2d');
-    const rg = sx.createRadialGradient(s/2,s/2,0,s/2,s/2,s/2);
-    rg.addColorStop(0,'rgba(255,255,255,1)'); rg.addColorStop(0.3,'rgba(255,255,255,0.85)'); rg.addColorStop(1,'rgba(255,255,255,0)');
-    sx.fillStyle = rg; sx.fillRect(0,0,s,s);
-    const sprite = new THREE.CanvasTexture(sc); sprite.colorSpace = THREE.SRGBColorSpace;
+    // glowing round sprite
+    const s = 64, cvs = document.createElement('canvas'); cvs.width = cvs.height = s;
+    const cx = cvs.getContext('2d');
+    const rg = cx.createRadialGradient(s/2, s/2, 0, s/2, s/2, s/2);
+    rg.addColorStop(0, 'rgba(255,255,255,1)'); rg.addColorStop(0.3, 'rgba(255,255,255,0.85)'); rg.addColorStop(1, 'rgba(255,255,255,0)');
+    cx.fillStyle = rg; cx.fillRect(0, 0, s, s);
+    const sprite = new THREE.CanvasTexture(cvs); sprite.colorSpace = THREE.SRGBColorSpace;
 
-    const N = 3600;
-    const worldW = Math.min(66, (W() / 900) * 66 + 34);
-
-    // targets for the two words + edge graphs
-    const T0 = textTargets('MAYUR PATIL', N, worldW);
-    const T1 = textTargets('DATA SCIENTIST', N, worldW);
-    const E0 = knnEdges(T0, N);
-    const E1 = knnEdges(T1, N);
-
-    // particle state — start scattered in a big sphere
-    const cur = new Float32Array(N * 3);
-    const vel = new Float32Array(N * 3);
-    const col = new Float32Array(N * 3);
-    const sz  = new Float32Array(N);
+    // ── build brain-ish point cloud ──
+    const PAL = [[1,0.16,0.16],[1,0.16,0.16],[0.23,0.51,0.96],[0.96,0.62,0.10],[1,1,1],[1,1,1]];
+    const N = 2600;
+    const nodes = [];
+    const pos = new Float32Array(N*3), col = new Float32Array(N*3), sz = new Float32Array(N);
     for (let i = 0; i < N; i++) {
-      const r = 90 + Math.random() * 70, th = Math.random() * 6.283, ph = Math.acos(2*Math.random()-1);
-      cur[i*3]   = r*Math.sin(ph)*Math.cos(th);
-      cur[i*3+1] = r*Math.sin(ph)*Math.sin(th);
-      cur[i*3+2] = r*Math.cos(ph) - 60;
-      const c = gradColor(i / N); col.set(c, i*3);
-      sz[i] = Math.random()*1.6 + 1.1;
+      // random point on sphere
+      const u = Math.random(), v = Math.random();
+      const th = 2*Math.PI*u, ph = Math.acos(2*v-1);
+      let x = Math.sin(ph)*Math.cos(th), y = Math.sin(ph)*Math.sin(th), z = Math.cos(ph);
+      // lumpy cortex via layered sines
+      let r = 16 + 2.6*Math.sin(x*6)*Math.sin(y*6)*Math.sin(z*6) + 1.4*Math.sin(x*13+y*9);
+      x *= r*1.28; y *= r*0.9; z *= r*1.05;   // ellipsoid (front-back longer)
+      // longitudinal fissure: push apart near mid-plane on top
+      if (Math.abs(x) < 2.4 && y > 0) x += (x >= 0 ? 1 : -1) * (2.4 - Math.abs(x)) * 1.6;
+      nodes.push(new THREE.Vector3(x, y, z));
+      pos.set([x, y, z], i*3);
+      const c = PAL[(Math.random()*PAL.length)|0]; col.set(c, i*3);
+      sz[i] = Math.random()*1.8 + 0.9;
     }
     const pGeo = new THREE.BufferGeometry();
-    pGeo.setAttribute('position', new THREE.BufferAttribute(cur, 3));
+    pGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
     pGeo.setAttribute('color', new THREE.BufferAttribute(col, 3));
     pGeo.setAttribute('psize', new THREE.BufferAttribute(sz, 1));
     const pMat = new THREE.ShaderMaterial({
-      uniforms: { uMap: { value: sprite }, uScale: { value: H() }, uOpacity: { value: 1 } },
+      uniforms: { uMap: { value: sprite }, uScale: { value: H() } },
       vertexShader: `attribute float psize; attribute vec3 color; varying vec3 vColor; uniform float uScale;
         void main(){ vColor=color; vec4 mv=modelViewMatrix*vec4(position,1.0);
         gl_PointSize=psize*(uScale/-mv.z)*0.9; gl_Position=projectionMatrix*mv; }`,
-      fragmentShader: `uniform sampler2D uMap; uniform float uOpacity; varying vec3 vColor;
-        void main(){ vec4 t=texture2D(uMap,gl_PointCoord); if(t.a<0.02) discard; gl_FragColor=vec4(vColor, t.a*uOpacity); }`,
+      fragmentShader: `uniform sampler2D uMap; varying vec3 vColor;
+        void main(){ vec4 t=texture2D(uMap,gl_PointCoord); if(t.a<0.02) discard; gl_FragColor=vec4(vColor,t.a); }`,
       transparent: true, blending: THREE.AdditiveBlending, depthWrite: false,
     });
     const points = new THREE.Points(pGeo, pMat);
 
-    // synapse lines
-    let edges = E0;
-    const lPos = new Float32Array(Math.max(E0.length, E1.length) * 3);
+    // ── synapse lines (sampled near pairs) ──
+    const linePos = [], lineCol = [], edges = [];
+    const MAXD = 7.5;
+    for (let k = 0; k < 9000; k++) {
+      const i = (Math.random()*N)|0, j = (Math.random()*N)|0;
+      if (i === j) continue;
+      const d = nodes[i].distanceTo(nodes[j]);
+      if (d < MAXD) {
+        const a = (1 - d/MAXD) * 0.4;
+        linePos.push(nodes[i].x,nodes[i].y,nodes[i].z, nodes[j].x,nodes[j].y,nodes[j].z);
+        lineCol.push(a,a,a, a,a,a);
+        if (edges.length < 60) edges.push([i, j]);
+      }
+      if (linePos.length > 4200*6) break;
+    }
     const lGeo = new THREE.BufferGeometry();
-    lGeo.setAttribute('position', new THREE.BufferAttribute(lPos, 3));
-    const lMat = new THREE.LineBasicMaterial({ color: 0x66aaff, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false });
-    const lines = new THREE.LineSegments(lGeo, lMat);
-    lGeo.setDrawRange(0, edges.length);
+    lGeo.setAttribute('position', new THREE.Float32BufferAttribute(linePos, 3));
+    lGeo.setAttribute('color', new THREE.Float32BufferAttribute(lineCol, 3));
+    const lines = new THREE.LineSegments(lGeo, new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending, depthWrite: false }));
+
+    // ── firing signal pulses (travel along edges) ──
+    const P = edges.length;
+    const sigPos = new Float32Array(P*3), sigT = new Float32Array(P);
+    for (let i = 0; i < P; i++) sigT[i] = Math.random();
+    const sGeo = new THREE.BufferGeometry();
+    sGeo.setAttribute('position', new THREE.BufferAttribute(sigPos, 3));
+    const sMat = new THREE.PointsMaterial({ size: 1.6, map: sprite, color: 0xffffff, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true });
+    const signals = new THREE.Points(sGeo, sMat);
 
     const group = new THREE.Group();
-    group.add(lines); group.add(points);
+    group.add(points); group.add(lines); group.add(signals);
     scene.add(group);
 
     const onResize = () => { camera.aspect = W()/H(); camera.updateProjectionMatrix(); renderer.setSize(W(), H()); pMat.uniforms.uScale.value = H(); };
     window.addEventListener('resize', onResize);
 
-    // timeline (ms)
-    const T = { formA: 1500, holdA: 2700, morph: 4100, holdB: 4900, boom: 5600 };
-    let raf, start = performance.now(), finished = false, exploded = false;
+    let raf, start = performance.now(), finished = false;
+    const DUR = 3400;          // total ms
+    const DIVE_AT = 2200;      // start diving in
     const clock = new THREE.Clock();
 
-    const setEdges = (E) => {
-      edges = E; lGeo.setDrawRange(0, edges.length);
-    };
-
     const animate = () => {
-      const el = performance.now() - start;
-      const dt = Math.min(clock.getDelta(), 0.05);
+      const now = performance.now();
+      const el = now - start;
+      const dt = clock.getDelta();
 
-      // choose target + line visibility per phase
-      let target = T0, lineOp = 0, k = 0.09;
-      if (el < T.formA) { target = T0; lineOp = 0; k = 0.06 + (el/T.formA)*0.05; }
-      else if (el < T.holdA) { target = T0; lineOp = 0.5; }
-      else if (el < T.morph) { target = T1; lineOp = 0.15; if (edges !== E1 && el > (T.holdA+T.morph)/2) setEdges(E1); }
-      else if (el < T.holdB) { target = T1; lineOp = 0.5; setEdges(E1); }
-      else { target = T1; lineOp = 0.5; }
+      group.rotation.y += dt * 0.35;
+      group.rotation.x = Math.sin(el*0.0004) * 0.12;
 
-      if (el < T.boom) {
-        // ease particles toward target
-        for (let i = 0; i < N*3; i++) cur[i] += (target[i] - cur[i]) * k;
+      // update signal pulses along their edges
+      for (let i = 0; i < P; i++) {
+        sigT[i] += dt * 0.6; if (sigT[i] > 1) sigT[i] -= 1;
+        const [a, b] = edges[i];
+        const t = sigT[i];
+        sigPos[i*3]   = nodes[a].x + (nodes[b].x - nodes[a].x) * t;
+        sigPos[i*3+1] = nodes[a].y + (nodes[b].y - nodes[a].y) * t;
+        sigPos[i*3+2] = nodes[a].z + (nodes[b].z - nodes[a].z) * t;
+      }
+      sGeo.attributes.position.needsUpdate = true;
+
+      // camera: orbit, then dive in
+      const orbR = 60;
+      if (el < DIVE_AT) {
+        const ang = el * 0.00035;
+        camera.position.set(Math.sin(ang)*orbR, 6, Math.cos(ang)*orbR);
+        camera.lookAt(0, 0, 0);
       } else {
-        // EXPLODE
-        if (!exploded) {
-          exploded = true;
-          for (let i = 0; i < N; i++) {
-            const x=cur[i*3], y=cur[i*3+1], z=cur[i*3+2];
-            const l = Math.hypot(x,y,z) || 1;
-            vel[i*3] = x/l*(1.2+Math.random()*1.8); vel[i*3+1]=y/l*(1.2+Math.random()*1.8); vel[i*3+2]=z/l*(1.2+Math.random()*1.8)+0.4;
-          }
-        }
-        for (let i = 0; i < N*3; i++) cur[i] += vel[i];
-        pMat.uniforms.uOpacity.value = Math.max(0, pMat.uniforms.uOpacity.value - dt * 1.6);
-        lineOp = 0;
-        if (pMat.uniforms.uOpacity.value <= 0.02 && !finished) { finished = true; onDone && onDone(); }
+        const p = Math.min((el - DIVE_AT) / (DUR - DIVE_AT), 1);
+        const eased = p * p;
+        const rad = orbR * (1 - eased) + 2 * eased;   // rush toward center
+        const ang = DIVE_AT * 0.00035 + p * 0.4;
+        camera.position.set(Math.sin(ang)*rad, 6*(1-eased), Math.cos(ang)*rad);
+        camera.lookAt(0, 0, 0);
+        if (p >= 1 && !finished) { finished = true; onDone && onDone(); }
       }
-      pGeo.attributes.position.needsUpdate = true;
 
-      // update synapse line vertices from live particle positions
-      if (lineOp > 0) {
-        for (let e = 0; e < edges.length; e++) {
-          const idx = edges[e];
-          lPos[e*3] = cur[idx*3]; lPos[e*3+1] = cur[idx*3+1]; lPos[e*3+2] = cur[idx*3+2];
-        }
-        lGeo.attributes.position.needsUpdate = true;
-      }
-      lMat.opacity += (lineOp - lMat.opacity) * 0.1;
-
-      group.rotation.y = Math.sin(el * 0.00018) * 0.18;
-      group.rotation.x = Math.sin(el * 0.00026) * 0.06;
       renderer.render(scene, camera);
       raf = requestAnimationFrame(animate);
     };
@@ -229,7 +149,7 @@ function NeuronScene({ onDone }) {
     return () => {
       cancelAnimationFrame(raf);
       window.removeEventListener('resize', onResize);
-      renderer.dispose(); pGeo.dispose(); lGeo.dispose(); pMat.dispose(); lMat.dispose(); sprite.dispose();
+      renderer.dispose(); pGeo.dispose(); lGeo.dispose(); sGeo.dispose(); pMat.dispose(); sprite.dispose();
       if (renderer.domElement.parentNode) renderer.domElement.parentNode.removeChild(renderer.domElement);
     };
   }, [onDone]);
@@ -243,7 +163,8 @@ const Preloader = () => {
 
   useEffect(() => {
     if (reduce) { setIsLoading(false); return; }
-    const cap = setTimeout(() => setIsLoading(false), 7000); // failsafe
+    // hard cap failsafe + skip on interaction
+    const cap = setTimeout(() => setIsLoading(false), 4200);
     const skip = () => setIsLoading(false);
     window.addEventListener('keydown', skip);
     window.addEventListener('click', skip);
@@ -256,13 +177,28 @@ const Preloader = () => {
         <motion.div
           key="preloader"
           initial={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.6, ease: 'easeInOut' }}
+          exit={{ opacity: 0, scale: 1.08 }}
+          transition={{ duration: 0.7, ease: [0.76, 0, 0.24, 1] }}
           className="fixed inset-0 w-full h-screen z-[100000] overflow-hidden bg-[#05060a] flex items-center justify-center"
         >
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,#0c0d16_0%,#05060a_72%)]" />
-          <NeuronScene onDone={() => setIsLoading(false)} />
-          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-white/25 text-[10px] font-mono tracking-[0.3em] uppercase">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,#0e0f18_0%,#05060a_70%)]" />
+          <BrainScene onDone={() => setIsLoading(false)} />
+
+          {/* caption */}
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+            transition={{ delay: 0.4, duration: 0.8 }}
+            className="relative z-10 text-center pointer-events-none"
+          >
+            <div className="text-white/90 font-black text-2xl md:text-4xl tracking-tight">
+              {personalInfo.brandName}<span className="text-[#ff2a2a]">.</span>
+            </div>
+            <div className="mt-3 font-mono text-[11px] md:text-xs text-[#ff2a2a] tracking-[0.3em] uppercase animate-pulse">
+              initializing neural net
+            </div>
+          </motion.div>
+
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-white/25 text-[10px] font-mono tracking-widest uppercase">
             click to skip
           </div>
         </motion.div>
