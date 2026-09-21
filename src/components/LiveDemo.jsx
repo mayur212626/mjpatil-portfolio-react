@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import useApiWarmup from '../hooks/useApiWarmup';
 
 const API = 'https://clinical-lab-predictor.onrender.com';
 
@@ -24,6 +25,7 @@ const riskColor = (level) =>
   level === 'HIGH' ? '#ff2a2a' : level === 'MEDIUM' ? '#f59e0b' : '#22c55e';
 
 const LiveDemo = () => {
+  const warmupRef = useApiWarmup(API); // boot the sleeping Render dyno before the click
   const [values, setValues] = useState(
     Object.fromEntries(FIELDS.map(([k, , , , , d]) => [k, d]))
   );
@@ -60,7 +62,7 @@ const LiveDemo = () => {
   const pct = result ? Math.round(result.probability * 100) : 0;
 
   return (
-    <section id="demo" className="bg-[#0a0a0a] py-24 px-6 md:px-12 w-full relative overflow-hidden font-sans bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:80px_80px]">
+    <section ref={warmupRef} id="demo" className="bg-[#0a0a0a] py-24 px-6 md:px-12 w-full relative overflow-hidden font-sans bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:80px_80px]">
       <div className="max-w-6xl mx-auto relative z-20">
         {/* Header */}
         <div data-aos="fade-up" className="mb-14 text-center">

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import useApiWarmup from '../hooks/useApiWarmup';
 
 // Live call to the deployed Log Anomaly Detection API (project 01).
 // Isolation Forest ensemble scores a single IP-behavior record → anomaly
@@ -47,6 +48,7 @@ const SEV_COLOR = {
 };
 
 const AnomalyLiveDemo = () => {
+  const warmupRef = useApiWarmup(API); // boot the sleeping Render dyno before the click
   const [scenario, setScenario] = useState('DoS flood');
   const [result, setResult] = useState(null);
   const [status, setStatus] = useState('idle'); // idle | loading | waking | done | error
@@ -78,6 +80,7 @@ const AnomalyLiveDemo = () => {
 
   return (
     <section
+      ref={warmupRef}
       id="anomaly"
       className="bg-[#0a0a0a] py-24 px-6 md:px-12 w-full relative overflow-hidden font-sans bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:80px_80px]"
     >
