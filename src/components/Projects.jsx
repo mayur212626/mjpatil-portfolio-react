@@ -1,202 +1,28 @@
-import React, { useRef } from 'react';
+import { useState } from 'react';
 import { projects, socialLinks } from '../data/portfolioData';
-
-// 3D tilt + cursor spotlight. Disabled on touch (no fine pointer).
-const useTilt = () => {
-  const ref = useRef(null);
-  const fine = typeof window !== 'undefined' && window.matchMedia('(pointer: fine)').matches;
-  const onMove = (e) => {
-    if (!fine || !ref.current) return;
-    const el = ref.current;
-    const r = el.getBoundingClientRect();
-    const px = (e.clientX - r.left) / r.width;   // 0..1
-    const py = (e.clientY - r.top) / r.height;
-    const rotY = (px - 0.5) * 10;   // deg
-    const rotX = (0.5 - py) * 10;
-    el.style.transform = `perspective(900px) rotateX(${rotX}deg) rotateY(${rotY}deg) scale(1.015)`;
-    el.style.setProperty('--mx', `${px * 100}%`);
-    el.style.setProperty('--my', `${py * 100}%`);
-  };
-  const onLeave = () => {
-    if (ref.current) ref.current.style.transform = 'perspective(900px) rotateX(0) rotateY(0) scale(1)';
-  };
-  return { ref, onMove, onLeave, fine };
-};
-
-const GitHubIcon = () => (
-  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-    <path fillRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clipRule="evenodd" />
-  </svg>
-);
-
-const ExternalLinkIcon = () => (
-  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-  </svg>
-);
-
-const ProjectCard = ({ project, aosDelay }) => {
-  const { ref, onMove, onLeave } = useTilt();
-  return (
-  <div
-    ref={ref}
-    onMouseMove={onMove}
-    onMouseLeave={onLeave}
-    data-aos="fade-up"
-    data-aos-delay={aosDelay}
-    style={{ transition: 'transform 0.25s ease-out', willChange: 'transform' }}
-    className={`relative rounded-2xl p-[1px] group ${
-      project.isFlagship
-        ? 'bg-gradient-to-br from-red-500/50 via-white/10 to-red-500/30 hover:from-red-500 hover:via-red-400/30 hover:to-red-500/60'
-        : 'bg-white/10 hover:bg-white/20'
-    }`}
-  >
-    {/* cursor spotlight */}
-    <div
-      className="pointer-events-none absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10"
-      style={{ background: 'radial-gradient(240px circle at var(--mx,50%) var(--my,50%), rgba(255,42,42,0.14), transparent 60%)' }}
-    />
-    <div className={`relative rounded-2xl p-6 md:p-8 h-full backdrop-blur-md transition-colors duration-500 ${
-      project.isFlagship
-        ? 'bg-[#0f0f0f]/95 group-hover:bg-[#0f0f0f]/90'
-        : 'bg-[#111111]/90 group-hover:bg-[#111111]/80'
-    }`}>
-      {/* Badge */}
-      {project.badge && (
-        <span className="inline-block text-xs font-bold tracking-widest uppercase text-red-400 bg-red-500/10 px-3 py-1 rounded-full border border-red-500/20 mb-4">
-          {project.badge}
-        </span>
-      )}
-
-      {/* Number + Title */}
-      <div className="flex items-baseline gap-4 mb-4">
-        <span className="text-5xl font-black text-white/10 font-serif italic">{project.number}</span>
-        <h3 className="text-2xl md:text-3xl font-black text-white tracking-tight">{project.title}</h3>
-      </div>
-
-      {/* Description */}
-      <p className="text-white/60 text-sm md:text-base leading-relaxed mb-6 max-w-2xl font-medium">
-        {project.description}
-      </p>
-
-      {/* Tech Tags */}
-      <div className="flex flex-wrap gap-2 mb-8">
-        {project.techTags.map((tag) => (
-          <span 
-            key={tag}
-            className="px-3 py-1 text-xs font-bold text-white/70 bg-white/5 rounded-full border border-white/10 hover:bg-red-500/20 hover:border-red-500/30 hover:text-red-300 transition-all duration-300 cursor-default"
-          >
-            {tag}
-          </span>
-        ))}
-      </div>
-
-      {/* Action Buttons */}
-      <div className="flex flex-wrap gap-3">
-        {/* GitHub */}
-        {project.links.github && (
-          <a 
-            href={project.links.github}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 text-white text-sm font-semibold hover:bg-white hover:text-black transition-all duration-300 group/btn"
-          >
-            <GitHubIcon />
-            GitHub
-          </a>
-        )}
-
-        {/* Live Demo (single) — only rendered when a demo link exists */}
-        {project.links.demo && (
-          <a
-            href={project.links.demo}
-            target={!project.links.demo.startsWith('#') ? "_blank" : undefined}
-            rel={!project.links.demo.startsWith('#') ? "noopener noreferrer" : undefined}
-            className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 bg-[#ff2a2a] text-white hover:bg-red-600 hover:shadow-[0_0_20px_rgba(255,42,42,0.4)]"
-          >
-            <ExternalLinkIcon />
-            Live Demo
-          </a>
-        )}
-
-        {/* Frontend Demo (Karigar) */}
-        {project.links.frontendDemo && (
-          <a 
-            href={project.links.frontendDemo}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#ff2a2a] text-white text-sm font-semibold hover:bg-red-600 hover:shadow-[0_0_20px_rgba(255,42,42,0.4)] transition-all duration-300"
-          >
-            <ExternalLinkIcon />
-            Frontend Demo
-          </a>
-        )}
-
-        {/* Backend API (Karigar) */}
-        {project.links.backendApi && (
-          <a 
-            href={project.links.backendApi}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 text-white text-sm font-semibold hover:bg-white/20 transition-all duration-300"
-          >
-            <ExternalLinkIcon />
-            Backend API
-          </a>
-        )}
-      </div>
-    </div>
-  </div>
-  );
-};
-
-const Projects = () => {
-  return (
-    <section id="projects" className="bg-[#0a0a0a] pt-24 pb-32 px-6 md:px-12 w-full relative overflow-hidden font-sans bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:80px_80px]">
-      <div className="max-w-6xl mx-auto">
-        
-        {/* Header */}
-        <div data-aos="fade-up" className="mb-16 md:mb-20">
-          <div className="inline-block border border-white/20 rounded-full px-5 py-1.5 text-sm text-white/60 font-bold mb-8 shadow-sm bg-white/5 backdrop-blur-sm">
-            Featured Projects
-          </div>
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-white leading-[1.1] mb-6 tracking-tight">
-            Work that speaks <br className="hidden md:block" />for itself
-          </h2>
-          <p className="text-white/50 text-base md:text-lg max-w-lg font-medium leading-relaxed">
-            A selection of projects that showcase my work in data science, machine learning, and research.
-          </p>
-        </div>
-
-        {/* Project Cards */}
-        <div className="flex flex-col gap-6 md:gap-8">
-          {projects.map((project, index) => (
-            <ProjectCard 
-              key={project.id} 
-              project={project} 
-              aosDelay={String((index + 1) * 100)}
-            />
-          ))}
-        </div>
-
-        {/* GitHub CTA */}
-        <div data-aos="fade-up" data-aos-delay="500" className="mt-16 flex justify-center">
-          <a
-            href={socialLinks.github}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-3 px-8 py-4 rounded-full border border-white/20 text-white font-bold text-lg hover:bg-white hover:text-black hover:shadow-[0_0_30px_rgba(255,255,255,0.15)] transition-all duration-500 group"
-          >
-            <GitHubIcon />
-            Explore All My Repositories
-            <svg className="w-5 h-5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-            </svg>
-          </a>
-        </div>
-      </div>
-    </section>
-  );
-};
-
-export default Projects;
+import { projectStories } from '../data/projectStories';
+const filters = ['All work', 'Data systems', 'Applied ML', 'GenAI'];
+function ProjectLinks({ project }) {
+  return <div className="project-links">{project.links.github && <a href={project.links.github} target="_blank" rel="noopener noreferrer">View code ↗</a>}{project.links.demo && <a className="demo-link" href={project.links.demo} target={project.links.demo.startsWith('#') ? undefined : '_blank'} rel={project.links.demo.startsWith('#') ? undefined : 'noopener noreferrer'}>Try demo ↗</a>}</div>;
+}
+function ProjectCard({ project }) {
+  const story = projectStories[project.id];
+  return <article id={`project-${project.id}`} className="project-panel" style={{ '--project-accent': story.accent }} aria-labelledby={`${project.id}-title`}>
+    <div className="project-overview"><p className="eyebrow"><span>{project.number}</span> / {project.category}</p><h3 id={`${project.id}-title`}>{project.title}</h3><p className="project-summary">{project.description}</p><ul className="tech-tags" aria-label="Technologies">{project.techTags.slice(0, 4).map(tag => <li key={tag}>{tag}</li>)}</ul><ProjectLinks project={project} /></div>
+    <div className="project-proof"><p className="eyebrow">{project.proofLabel}</p><p className="project-result">{project.result}</p><p className="proof-note">{project.resultContext}</p><ol className="pipeline" aria-label="Project pipeline">{project.pipeline.map((stage, i) => <li key={stage}><span className="pipeline-dot" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>{stage}</li>)}</ol><a className="evidence-link" href={`${project.links.github}#readme`} target="_blank" rel="noopener noreferrer">Read project documentation ↗</a></div>
+    <details className="case-study"><summary><span>Inside the project</span><span className="case-hint">Problem / decisions / limitations</span><span className="case-plus" aria-hidden="true">+</span></summary><div className="case-body">{[['01 / The problem',story.challenge],['02 / Design decisions',story.decisions],['03 / What to know',story.limits]].map(([title,text]) => <div key={title}><h4>{title}</h4><p>{text}</p></div>)}</div></details>
+  </article>;
+}
+export default function Projects() {
+  const [filter, setFilter] = useState('All work');
+  const selected = projects.slice(0, 3);
+  // Cards remain mounted so direct project links and expanded case studies survive filtering.
+  return <section id="projects" className="selected-work"><div className="section-shell">
+    <div className="section-heading"><div><p className="eyebrow">01 / Selected work</p><h2>Built to explore.<br /><span>Engineered to explain.</span></h2></div><p>Go beyond the headline. Explore the architecture, the engineering decisions, and the limits of each project.</p></div>
+    <div className="project-toolbar"><div className="work-filters" role="group" aria-label="Filter featured projects">{filters.map(item => <button type="button" key={item} aria-pressed={filter === item} onClick={() => setFilter(item)}>{item}</button>)}</div><span className="result-count" aria-live="polite">{filter === 'All work' ? '03' : '01'} featured {filter === 'All work' ? 'projects' : 'project'}</span></div>
+    <div className="featured-projects">{selected.map(project => <div key={project.id} hidden={filter !== 'All work' && projectStories[project.id].filter !== filter}><ProjectCard project={project} /></div>)}</div>
+    {filter !== 'All work' && <button className="reset-filter" type="button" onClick={() => setFilter('All work')}>Show all featured projects →</button>}
+    <details className="more-projects"><summary>More explorations <span>Forecasting & distributed data</span></summary><div className="additional-projects">{projects.slice(3).map(project => <article key={project.id}><h3>{project.title}</h3><p>{project.description}</p><ProjectLinks project={project} />{!project.links.github && <p className="proof-note">Repository link coming soon.</p>}</article>)}</div></details>
+    <a className="all-repos" href={socialLinks.github} target="_blank" rel="noopener noreferrer">Explore all repositories ↗</a>
+  </div></section>;
+}

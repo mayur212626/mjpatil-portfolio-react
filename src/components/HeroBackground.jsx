@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 
 // Real 3D particle network (Three.js / WebGL): colored point cloud in depth,
@@ -30,7 +30,9 @@ const HeroBackground = () => {
     const camera = new THREE.PerspectiveCamera(62, W() / H(), 0.1, 300);
     camera.position.z = 62;
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
+    let renderer;
+    try { renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'low-power' }); }
+    catch { return; } // Keep the CSS backdrop if WebGL is unavailable.
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     renderer.setSize(W(), H());
     renderer.setClearColor(0x000000, 0);
@@ -156,19 +158,27 @@ const HeroBackground = () => {
       renderer.render(scene, camera);
       raf = requestAnimationFrame(animate);
     };
+    let inView = true;
     if (!reduce) animate(); else renderer.render(scene, camera);
 
     const onVis = () => {
       if (document.hidden) cancelAnimationFrame(raf);
-      else if (!reduce) { cancelAnimationFrame(raf); clock.getDelta(); animate(); }
+      else if (!reduce && inView) { cancelAnimationFrame(raf); clock.getDelta(); animate(); }
     };
     document.addEventListener('visibilitychange', onVis);
+    const observer = new IntersectionObserver(([entry]) => {
+      inView = entry.isIntersecting;
+      cancelAnimationFrame(raf);
+      if (inView && !document.hidden && !reduce) { clock.getDelta(); animate(); }
+    });
+    observer.observe(mount);
 
     return () => {
       cancelAnimationFrame(raf);
       window.removeEventListener('mousemove', onMove);
       window.removeEventListener('resize', onResize);
       document.removeEventListener('visibilitychange', onVis);
+      observer.disconnect();
       renderer.dispose(); pGeo.dispose(); lGeo.dispose(); pMat.dispose(); lMat.dispose(); sprite.dispose();
       if (renderer.domElement.parentNode) renderer.domElement.parentNode.removeChild(renderer.domElement);
     };
@@ -178,8 +188,6 @@ const HeroBackground = () => {
     <div className="absolute inset-0 z-0 overflow-hidden bg-[#07080b]">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_62%_45%,#101119_0%,#07080b_72%)]" />
       <div ref={mountRef} className="absolute inset-0 w-full h-full" />
-      {/* left fade keeps the heading readable */}
-      <div className="absolute inset-0 pointer-events-none bg-gradient-to-r from-[#07080b]/85 via-[#07080b]/25 to-transparent" />
     </div>
   );
 };

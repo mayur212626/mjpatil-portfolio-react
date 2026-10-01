@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import * as THREE from 'three';
 import { personalInfo } from '../data/portfolioData';
@@ -161,11 +161,11 @@ function BrainScene({ onDone }) {
 }
 
 const Preloader = () => {
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(() => !window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   const reduce = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   useEffect(() => {
-    if (reduce) { setIsLoading(false); return; }
+    if (reduce) return;
     // hard cap failsafe + skip on interaction
     const cap = setTimeout(() => setIsLoading(false), 4200);
     const skip = () => setIsLoading(false);
@@ -187,7 +187,7 @@ const Preloader = () => {
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,#0e0f18_0%,#05060a_70%)]" />
           <BrainScene onDone={() => setIsLoading(false)} />
 
-          {/* caption — per-letter pop, colored from the brain palette */}
+          {/* caption: per-letter pop, colored from the brain palette */}
           <div className="relative z-10 text-center pointer-events-none px-6">
             {/* soft dark backing so the name reads over the colorful brain */}
             <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[200%] bg-[radial-gradient(ellipse_at_center,#05060aee_0%,#05060a88_45%,transparent_75%)]" />
