@@ -1,47 +1,25 @@
-import Preloader from './components/Preloader'
 import Navbar from './components/Navbar'
 import Hero from './components/Hero'
 import About from './components/About'
 import TechnicalSkills from './components/TechnicalSkills'
-import Services from './components/Services'
 import Projects from './components/Projects'
-import GitHubStats from './components/GitHubStats'
 import LiveDemo from './components/LiveDemo'
 import AnomalyLiveDemo from './components/AnomalyLiveDemo'
-import ContentCreator from './components/ContentCreator'
 import Internships from './components/Internships'
 import Leadership from './components/Leadership'
-import Certificates from './components/Certificates'
-import SoftSkills from './components/SoftSkills'
 import Contact from './components/Contact'
 import Footer from './components/Footer'
 import CommandPalette from './components/CommandPalette'
 import ScrollProgress from './components/ScrollProgress'
 
-function App() {
-  return (
-    <>
-      <Preloader />
-      <ScrollProgress />
-      <CommandPalette />
-      <Navbar />
-      <Hero />
-      <About />
-      <TechnicalSkills />
-      <Services />
-      <Projects />
-      <GitHubStats />
-      <LiveDemo />
-      <AnomalyLiveDemo />
-      <ContentCreator />
-      <Internships />
-      <Leadership />
-      <Certificates />
-      <SoftSkills />
-      <Contact />
-      <Footer />
-    </>
-  )
+export default function App() {
+  return <>
+    <a className="skip-link" href="#main">Skip to content</a>
+    <ScrollProgress /><CommandPalette /><Navbar />
+    <main id="main">
+      <Hero /><Projects /><About /><TechnicalSkills />
+      <LiveDemo /><AnomalyLiveDemo /><Internships /><Leadership /><Contact />
+    </main>
+    <Footer />
+  </>
 }
-
-export default App
