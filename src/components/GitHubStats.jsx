@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { socialLinks } from '../data/portfolioData';
 
-// Live GitHub stats — fetched client-side from the public API (60 req/hr unauth is plenty).
+// Live GitHub stats: fetched client-side from the public API (60 req/hr unauth is plenty).
 const GitHubStats = () => {
   const [stats, setStats] = useState(null);
 

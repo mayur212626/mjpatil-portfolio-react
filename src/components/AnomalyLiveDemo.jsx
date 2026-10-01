@@ -2,7 +2,7 @@ import { useState } from 'react';
 import useApiWarmup from '../hooks/useApiWarmup';
 
 // Live call to the deployed Log Anomaly Detection API (project 01).
-// Isolation Forest ensemble scores a single IP-behavior record → anomaly
+// Isolation Forest scores a single IP-behavior record → anomaly
 // flag + severity. Endpoint: POST /score (see api/main.py, LogEntry schema).
 const API = 'https://anomaly-detection-z5fp.onrender.com';
 
@@ -56,7 +56,7 @@ const AnomalyLiveDemo = () => {
   const score = async () => {
     setStatus('loading');
     setResult(null);
-    // Render free tier sleeps — first call may take ~50s. Warn if slow.
+    // Render free tier sleeps: first call may take ~50s. Warn if slow.
     const slowTimer = setTimeout(() => setStatus('waking'), 4000);
     try {
       const res = await fetch(`${API}/score`, {
@@ -95,7 +95,7 @@ const AnomalyLiveDemo = () => {
           </h2>
           <p className="text-white/50 text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
             This calls my real Log Anomaly Detection API, an Isolation Forest
-            ensemble trained on 500K HTTP logs, 20 behavioral features per IP.
+            scoring service. The project uses 500K synthetic HTTP logs and behavioral features per IP.
             Pick an attack scenario, hit score, see the live verdict.
           </p>
           <p className="text-white/30 text-xs mt-2">Research prototype · synthetic traffic</p>

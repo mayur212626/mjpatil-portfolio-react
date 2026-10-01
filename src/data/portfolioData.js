@@ -1,5 +1,5 @@
 // ============================================================
-// portfolioData.js — Centralized configuration for Mayur Patil's Portfolio
+// portfolioData.js: Centralized configuration for Mayur Patil's Portfolio
 // All external links, personal info, and content in one place.
 // Built from Mayur's resume + GitHub (github.com/mayur212626).
 // ============================================================
@@ -16,7 +16,7 @@ export const personalInfo = {
     secondary: "mayurpatil4001@gmail.com",
   },
   summary:
-    "M.S. Data Science student at GWU building large-scale ML and data systems, from 500K-record PySpark pipelines to clinical ML models with full governance and live API deployment. Published researcher, open to a Summer 2026 Data Science internship.",
+    "M.S. Data Science student at GWU building large-scale ML and data systems, from 500K-record PySpark pipelines to clinical ML models with full governance and live API deployment. Published researcher exploring opportunities in data science and ML engineering.",
   resumeUrl: "/Mayur_Patil_Resume.pdf", // drop resume PDF into /public with this name
 };
 
@@ -34,7 +34,7 @@ export const heroContent = {
   ctaPrimary: { text: "View My Work", href: "#projects" },
   ctaSecondary: {
     text: "Contact Me",
-    href: "mailto:mayurpatil4001@gmail.com?subject=Opportunity – Portfolio&body=Hi Mayur,%0D%0A%0D%0AI came across your portfolio and would like to connect.%0D%0A%0D%0ABest regards,",
+    href: "mailto:mayurpatil4001@gmail.com?subject=Opportunity: Portfolio&body=Hi Mayur,%0D%0A%0D%0AI came across your portfolio and would like to connect.%0D%0A%0D%0ABest regards,",
   },
   ctaResume: { text: "Download Resume", href: "/Mayur_Patil_Resume.pdf" },
 };
@@ -75,7 +75,7 @@ export const skillsContent = {
   endText: "Shipped & monitored!",
 };
 
-// Technical Skills — from resume
+// Technical Skills: from resume
 export const technicalSkills = {
   categories: [
     {
@@ -182,7 +182,7 @@ export const contentCreation = {
       title: "End-to-End ML Systems",
       description:
         "From data to deployed API: training deep learning and ensemble models, then shipping them as live, monitored services.",
-      stats: "AUC-ROC 0.96 · Live APIs",
+      stats: "Explainability · Live APIs",
       icon: "🧠",
     },
     {
@@ -229,12 +229,12 @@ export const leadershipList = [
   },
 ];
 
-// Work Experience — from resume
+// Work Experience: from resume
 export const internshipsList = [
   {
     organization: "Academor",
     role: "Cybersecurity Engineer Intern",
-    duration: "Nov 2023 – Dec 2023 · Bengaluru, India",
+    duration: "Nov 2023 to Dec 2023 · Bengaluru, India",
     skills: ["Python Automation", "Observability", "Data Integrity", "Compliance"],
     tech: ["Python", "Monitoring Dashboards", "Alerting", "SQL"],
   },
@@ -254,97 +254,149 @@ export const softSkillsList = [
 
 export const projects = [
   {
-    id: "anomaly-detection",
-    number: "01",
-    badge: "🚀 Flagship Project",
-    title: "Large-Scale Log Anomaly Detection",
-    description:
-      "A telemetry monitoring pipeline processing 500K+ HTTP server logs with PySpark: 20 behavioral features per IP, and an ensemble of Isolation Forest, Local Outlier Factor, and a rule engine (2-of-3 majority vote) achieving 540x critical-error lift and Precision@100 of 0.78. SHAP explainability, MLflow tracking, KS/PSI drift detection, and FastAPI delivery with full model governance.",
-    techTags: ["PySpark", "Scikit-learn", "Isolation Forest", "MLflow", "FastAPI", "SHAP"],
-    links: {
-      github: "https://github.com/mayur212626/anomaly-detection",
-      demo: "#anomaly",
+    "id": "anomaly-detection",
+    "number": "01",
+    "badge": "🚀 Flagship Project",
+    "title": "Large-Scale Log Anomaly Detection",
+    "description": "Detect unusual HTTP traffic with behavioral features, an anomaly-detection ensemble, and drift monitoring. A separate FastAPI service serves Isolation Forest scores.",
+    "techTags": [
+      "PySpark",
+      "Scikit-learn",
+      "MLflow",
+      "FastAPI"
+    ],
+    "links": {
+      "github": "https://github.com/mayur212626/anomaly-detection",
+      "demo": "#anomaly"
     },
-    isFlagship: true,
+    "isFlagship": true,
+    "category": "Data engineering / anomaly detection",
+    "proofLabel": "Synthetic dataset",
+    "result": "500K log records",
+    "resultContext": "Generated HTTP logs calibrated to NASA log statistics. The repository documents the dataset and evaluation approach.",
+    "pipeline": [
+      "HTTP logs → behavioral features",
+      "Ensemble analysis → drift monitoring",
+      "Isolation Forest → scoring API"
+    ]
   },
   {
-    id: "clinical-lab-predictor",
-    number: "02",
-    badge: null,
-    title: "Clinical Lab Abnormality Predictor",
-    description:
-      "An end-to-end clinical ML system predicting diabetes risk from lab values: group-median imputation, SMOTE balancing, Random Forest + PyTorch NN, and bias audits across age groups. AUC-ROC 0.9618, 89% accuracy, 92% sensitivity, zero fairness disparity. Deployed live on Render with SHAP, MLflow, Streamlit, Docker, and GitHub Actions CI/CD.",
-    techTags: ["PyTorch", "Scikit-learn", "FastAPI", "Docker", "Streamlit", "CI/CD"],
-    links: {
-      github: "https://github.com/mayur212626/clinical-lab-predictor",
-      demo: "#demo",
+    "id": "clinical-lab-predictor",
+    "number": "02",
+    "badge": null,
+    "title": "Clinical Lab Abnormality Predictor",
+    "description": "Explore diabetes-risk modeling with data curation, Random Forest and PyTorch models, age-group fairness audits, and an explainable API.",
+    "techTags": [
+      "PyTorch",
+      "Scikit-learn",
+      "SHAP",
+      "Docker"
+    ],
+    "links": {
+      "github": "https://github.com/mayur212626/clinical-lab-predictor",
+      "demo": "#demo"
     },
-    isFlagship: false,
+    "isFlagship": false,
+    "category": "Applied ML / research prototype",
+    "proofLabel": "End-to-end workflow",
+    "result": "Train. Explain. Serve.",
+    "resultContext": "Built on the Pima Indians Diabetes dataset. Research prototype; results do not establish clinical validity or generalize to all populations.",
+    "pipeline": [
+      "Lab values → curation & features",
+      "Random Forest / PyTorch → evaluation",
+      "SHAP explanations → FastAPI"
+    ]
   },
   {
-    id: "signal-ai",
-    number: "03",
-    badge: null,
-    title: "SIGNAL: Sales Intelligence Layer",
-    description:
-      "A 5-agent LLM pipeline automating qualitative thematic analysis, sentiment tracking, and cross-document synthesis across B2B sales transcripts. 91.2% thematic recall (kappa=0.81), buyer-engagement scoring at r=0.87 with human raters, and a strategic advisory agent producing prioritized P1/P2/P3 recommendations, shipped as a Streamlit dashboard with automated PDF reports.",
-    techTags: ["Python", "Multi-Agent LLM", "NLP", "Streamlit"],
-    links: {
-      github: "https://github.com/mayur212626/signal-ai",
-      demo: null,
+    "id": "signal-ai",
+    "number": "03",
+    "badge": null,
+    "title": "SIGNAL: Sales Intelligence Layer",
+    "description": "Turn B2B sales-call transcripts into themes, sentiment patterns, and prioritized recommendations through a sequential five-agent workflow.",
+    "techTags": [
+      "Python",
+      "Multi-Agent LLM",
+      "NLP",
+      "Streamlit"
+    ],
+    "links": {
+      "github": "https://github.com/mayur212626/signal-ai",
+      "demo": null
     },
-    isFlagship: false,
+    "isFlagship": false,
+    "category": "Language models / in development",
+    "proofLabel": "Work in progress",
+    "result": "5-agent pipeline",
+    "resultContext": "The current repository documents six sample transcripts, a Streamlit dashboard, and PDF report generation.",
+    "pipeline": [
+      "Transcripts → structured call analysis",
+      "Themes & sentiment → cross-call patterns",
+      "Strategic recommendations → report"
+    ]
   },
   {
-    id: "stock-lstm",
-    number: "04",
-    badge: null,
-    title: "Multi-Modal Stock Price Prediction (LSTM)",
-    description:
-      "An LSTM stock-prediction pipeline on AWS SageMaker achieving MAPE of 7.19%: 44 features combining 39 technical indicators with NLP sentiment from 6,700+ financial news articles. Controlled A/B experiments delivered a 7.1% accuracy gain over baseline, with automated retraining on S3 and audit-ready experiment tracking.",
-    techTags: ["PyTorch", "AWS SageMaker", "NLP", "PySpark", "LSTM"],
-    links: {
-      github: "https://github.com/mayur212626",
-      demo: null,
+    "id": "stock-lstm",
+    "number": "04",
+    "badge": null,
+    "title": "Multi-Modal Stock Price Prediction (LSTM)",
+    "description": "A stock-forecasting project combining technical indicators and financial-news sentiment with LSTM modeling on AWS SageMaker.",
+    "techTags": [
+      "PyTorch",
+      "AWS SageMaker",
+      "NLP",
+      "PySpark",
+      "LSTM"
+    ],
+    "links": {
+      "github": null,
+      "demo": null
     },
-    isFlagship: false,
+    "isFlagship": false
   },
   {
-    id: "fifa-wc2026-predictor",
-    number: "05",
-    badge: null,
-    title: "FIFA World Cup 2026 Predictor",
-    description:
-      "A Bayesian forecasting engine for the 2026 World Cup using Dixon-Coles modeling and Monte Carlo simulation to project match outcomes and tournament progression.",
-    techTags: ["Python", "Bayesian Modeling", "Monte Carlo", "Dixon-Coles"],
-    links: {
-      github: "https://github.com/mayur212626/fifa-wc2026-predictor",
-      demo: "https://wc2026-title-race.onrender.com",
+    "id": "fifa-wc2026-predictor",
+    "number": "05",
+    "badge": null,
+    "title": "FIFA World Cup 2026 Predictor",
+    "description": "A Bayesian forecasting engine for the 2026 World Cup using Dixon-Coles modeling and Monte Carlo simulation to project match outcomes and tournament progression.",
+    "techTags": [
+      "Python",
+      "Bayesian Modeling",
+      "Monte Carlo",
+      "Dixon-Coles"
+    ],
+    "links": {
+      "github": "https://github.com/mayur212626/fifa-wc2026-predictor",
+      "demo": "https://wc2026-title-race.onrender.com"
     },
-    isFlagship: false,
+    "isFlagship": false
   },
   {
-    id: "ais-ship-prediction",
-    number: "06",
-    badge: null,
-    title: "Ship Type & Course Prediction (AIS)",
-    description:
-      "A PySpark pipeline predicting vessel type and course-over-ground from 358K+ maritime AIS records: large-scale feature engineering and classification on distributed data.",
-    techTags: ["PySpark", "Machine Learning", "Big Data", "Classification"],
-    links: {
-      github: "https://github.com/mayur212626/PREDICTION-OF-SHIP-TYPE-AND-COG-FROM-AIS-DATA-SET",
-      demo: null,
+    "id": "ais-ship-prediction",
+    "number": "06",
+    "badge": null,
+    "title": "Ship Type & Course Prediction (AIS)",
+    "description": "A PySpark pipeline predicting vessel type and course-over-ground from 358K+ maritime AIS records: large-scale feature engineering and classification on distributed data.",
+    "techTags": [
+      "PySpark",
+      "Machine Learning",
+      "Big Data",
+      "Classification"
+    ],
+    "links": {
+      "github": "https://github.com/mayur212626/PREDICTION-OF-SHIP-TYPE-AND-COG-FROM-AIS-DATA-SET",
+      "demo": null
     },
-    isFlagship: false,
-  },
+    "isFlagship": false
+  }
 ];
 
 // Repurposed "Certifications" section → KEY ACHIEVEMENTS (metric highlights)
 export const certificates = {
   featured: [
-    { name: "540x Critical-Error Lift", issuer: "Log Anomaly Detection", icon: "📈" },
-    { name: "AUC-ROC 0.9618 · Zero Bias", issuer: "Clinical ML Model", icon: "🏥" },
-    { name: "91.2% Thematic Recall", issuer: "SIGNAL: Multi-Agent LLM", icon: "🤖" },
+    { name: "500K Synthetic Log Records", issuer: "Log Anomaly Detection", icon: "📈" },
+    { name: "Clinical ML Research Prototype", issuer: "Clinical ML Model", icon: "🏥" },
+    { name: "5-Agent LLM Pipeline", issuer: "SIGNAL: Multi-Agent LLM", icon: "🤖" },
     { name: "MAPE 7.19%", issuer: "Stock LSTM on AWS SageMaker", icon: "📊" },
     { name: "500K+ Records", issuer: "PySpark Data Pipeline", icon: "⚙️" },
     { name: "2 Published Papers", issuer: "IJIRMPS · 2024", icon: "🔬" },
@@ -353,7 +405,7 @@ export const certificates = {
   viewAllUrl: "https://github.com/mayur212626",
 };
 
-// Education — from resume
+// Education: from resume
 export const education = {
   degree: "M.S. in Data Science",
   institution: "The George Washington University · Washington, DC",
@@ -374,7 +426,7 @@ export const footerContent = {
   copyright: `© ${new Date().getFullYear()} Mayur Patil | Built with React`,
 };
 
-// EmailJS Configuration — for the working contact form.
+// EmailJS Configuration: for the working contact form.
 // Sign up free at emailjs.com, then put your keys in a .env file (see .env.example).
 export const emailjsConfig = {
   serviceId: import.meta.env.VITE_EMAILJS_SERVICE_ID || "YOUR_EMAILJS_SERVICE_ID",

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 // Thin gradient progress bar pinned to the very top of the viewport.
 const ScrollProgress = () => {

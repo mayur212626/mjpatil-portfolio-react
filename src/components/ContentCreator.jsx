@@ -1,4 +1,3 @@
-import React from 'react';
 import { contentCreation, socialLinks } from '../data/portfolioData';
 
 const CreatorCard = ({ category, index }) => (

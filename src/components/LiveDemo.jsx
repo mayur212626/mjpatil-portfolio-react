@@ -41,7 +41,7 @@ const LiveDemo = () => {
     const body = JSON.stringify(
       Object.fromEntries(Object.entries(values).map(([k, v]) => [k, Number(v)]))
     );
-    // Render free tier sleeps — first call may take ~50s. Warn user if slow.
+    // Render free tier sleeps: first call may take ~50s. Warn user if slow.
     const slowTimer = setTimeout(() => setStatus('waking'), 4000);
     try {
       const res = await fetch(`${API}/predict`, {
@@ -73,9 +73,9 @@ const LiveDemo = () => {
             Try My Deployed Model
           </h2>
           <p className="text-white/50 text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
-            This calls my real diabetes-risk model (Random Forest + PyTorch, AUC-ROC 0.96), live on its FastAPI service. Move the sliders, hit predict.
+            Explore my diabetes-risk research prototype, live on its FastAPI service. Move the sliders, hit predict.
           </p>
-          <p className="text-white/30 text-xs mt-2">Research prototype · not medical advice</p>
+          <p className="text-white/30 text-xs mt-2">Trained on the Pima Indians Diabetes dataset · research only, not medical advice</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
@@ -98,10 +98,11 @@ const LiveDemo = () => {
               {FIELDS.map(([k, label, min, max, step]) => (
                 <div key={k}>
                   <div className="flex justify-between mb-1">
-                    <label className="text-white/60 text-xs font-bold uppercase tracking-wider">{label}</label>
+                    <label htmlFor={`clinical-${k}`} className="text-white/60 text-xs font-bold uppercase tracking-wider">{label}</label>
                     <span className="text-white text-xs font-mono">{values[k]}</span>
                   </div>
                   <input
+                    id={`clinical-${k}`}
                     type="range"
                     min={min}
                     max={max}
@@ -124,7 +125,7 @@ const LiveDemo = () => {
           </div>
 
           {/* Result */}
-          <div data-aos="fade-left" className="bg-white/5 border border-white/10 rounded-2xl p-6 md:p-8 min-h-[320px] flex flex-col items-center justify-center text-center">
+          <div data-aos="fade-left" className="bg-white/5 border border-white/10 rounded-2xl p-6 md:p-8 min-h-[320px] flex flex-col items-center justify-center text-center" aria-live="polite">
             {status === 'error' && (
               <p className="text-white/60 text-sm">API unreachable. The free-tier host may be cold; try again in ~30s.</p>
             )}
