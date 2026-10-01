@@ -24,7 +24,7 @@ export default function useApiWarmup(apiBase) {
     const warm = () => {
       if (firedRef.current) return;
       firedRef.current = true;
-      // Any request boots the dyno — route/status don't matter. Opaque + keepalive
+      // Any request boots the dyno: route/status don't matter. Opaque + keepalive
       // so it survives navigation and never blocks or errors the page.
       fetch(`${apiBase}/`, { mode: 'no-cors', cache: 'no-store', keepalive: true }).catch(() => {});
     };
