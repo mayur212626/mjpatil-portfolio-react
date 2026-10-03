@@ -23,7 +23,7 @@ export const projectStories = {
     ],
     challenge: 'A score alone tells little about how a model behaves. This project builds the surrounding workflow: data checks, evaluation, explanations, and repeatable deployment.',
     decisions: 'Use a small, well-understood dataset to focus on ML engineering. Keep training, evaluation, governance, and serving as separate parts of the system.',
-    limits: 'This is a research prototype trained on a specific population. It is not a clinical tool; fairness checks on selected groups do not establish that a model is bias-free.',
+    limits: 'Research only. The displayed evaluation is a separate eight-feature Random Forest baseline with training-only median imputation. It does not reproduce the deployed model or the README scores. A single split from a specific population cannot establish clinical validity or fairness.',
   },
   'signal-ai': {
     short: 'SIGNAL', filter: 'GenAI', accent: '#b5a4fa',
