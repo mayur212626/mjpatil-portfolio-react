@@ -19,7 +19,8 @@ const HeroBackground = () => {
 
   useEffect(() => {
     const mount = mountRef.current;
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const motionMedia = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const motionPaused = () => motionMedia.matches || document.documentElement.dataset.motion === 'paused';
 
     const scene = new THREE.Scene();
     scene.fog = new THREE.FogExp2(0x07080b, 0.014);
@@ -55,7 +56,7 @@ const HeroBackground = () => {
     const sprite = makeSprite();
 
     // ── point cloud in a 3D box ──
-    const N = 150;
+    const N = window.innerWidth < 700 ? 85 : 150;
     const spanX = 110, spanY = 65, spanZ = 70;
     const pos = new Float32Array(N * 3);
     const col = new Float32Array(N * 3);
@@ -140,6 +141,7 @@ const HeroBackground = () => {
       camera.updateProjectionMatrix();
       renderer.setSize(W(), H());
       pMat.uniforms.uScale.value = H();
+      if (motionPaused()) renderer.render(scene, camera);
     };
     window.addEventListener('resize', onResize);
 
@@ -159,25 +161,33 @@ const HeroBackground = () => {
       raf = requestAnimationFrame(animate);
     };
     let inView = true;
-    if (!reduce) animate(); else renderer.render(scene, camera);
+    if (!motionPaused()) animate(); else renderer.render(scene, camera);
 
     const onVis = () => {
       if (document.hidden) cancelAnimationFrame(raf);
-      else if (!reduce && inView) { cancelAnimationFrame(raf); clock.getDelta(); animate(); }
+      else if (!motionPaused() && inView) { cancelAnimationFrame(raf); clock.getDelta(); animate(); }
     };
     document.addEventListener('visibilitychange', onVis);
     const observer = new IntersectionObserver(([entry]) => {
       inView = entry.isIntersecting;
       cancelAnimationFrame(raf);
-      if (inView && !document.hidden && !reduce) { clock.getDelta(); animate(); }
+      if (inView && !document.hidden && !motionPaused()) { clock.getDelta(); animate(); }
     });
     observer.observe(mount);
+    const onMotionChange = () => {
+      cancelAnimationFrame(raf);
+      if (!motionPaused() && inView && !document.hidden) { clock.getDelta(); animate(); }
+    };
+    window.addEventListener('portfolio-motion-change', onMotionChange);
+    motionMedia.addEventListener('change', onMotionChange);
 
     return () => {
       cancelAnimationFrame(raf);
       window.removeEventListener('mousemove', onMove);
       window.removeEventListener('resize', onResize);
       document.removeEventListener('visibilitychange', onVis);
+      window.removeEventListener('portfolio-motion-change', onMotionChange);
+      motionMedia.removeEventListener('change', onMotionChange);
       observer.disconnect();
       renderer.dispose(); pGeo.dispose(); lGeo.dispose(); pMat.dispose(); lMat.dispose(); sprite.dispose();
       if (renderer.domElement.parentNode) renderer.domElement.parentNode.removeChild(renderer.domElement);
