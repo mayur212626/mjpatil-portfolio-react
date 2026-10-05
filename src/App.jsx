@@ -11,13 +11,14 @@ import Contact from './components/Contact'
 import Footer from './components/Footer'
 import CommandPalette from './components/CommandPalette'
 import ScrollProgress from './components/ScrollProgress'
+import VisualExperience, { MotionControl } from './components/VisualExperience'
 
 export default function App() {
   return <>
     <a className="skip-link" href="#main">Skip to content</a>
-    <ScrollProgress /><CommandPalette /><Navbar />
+    <ScrollProgress /><CommandPalette /><Navbar /><MotionControl />
     <main id="main">
-      <Hero /><Projects /><About /><TechnicalSkills />
+      <Hero /><Projects /><VisualExperience /><About /><TechnicalSkills />
       <LiveDemo /><AnomalyLiveDemo /><Internships /><Leadership /><Contact />
     </main>
     <Footer />
