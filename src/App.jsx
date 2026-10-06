@@ -12,13 +12,14 @@ import Footer from './components/Footer'
 import CommandPalette from './components/CommandPalette'
 import ScrollProgress from './components/ScrollProgress'
 import VisualExperience, { MotionControl } from './components/VisualExperience'
+import SignalTransition from './components/SignalTransition'
 
 export default function App() {
   return <>
     <a className="skip-link" href="#main">Skip to content</a>
     <ScrollProgress /><CommandPalette /><Navbar /><MotionControl />
     <main id="main">
-      <Hero /><Projects /><VisualExperience /><About /><TechnicalSkills />
+      <Hero /><SignalTransition /><Projects /><VisualExperience /><About /><TechnicalSkills />
       <LiveDemo /><AnomalyLiveDemo /><Internships /><Leadership /><Contact />
     </main>
     <Footer />

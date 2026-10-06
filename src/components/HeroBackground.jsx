@@ -1,205 +1,107 @@
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 
-// Real 3D particle network (Three.js / WebGL): colored point cloud in depth,
-// connecting lines, perspective + fog, slow rotation with mouse parallax.
-// Matches the layered, depthy reference look.
-const COLORS = [
-  [1.0, 0.16, 0.16], // red
-  [1.0, 0.16, 0.16], // red (weighted)
-  [1.0, 0.23, 0.23], // red-2
-  [0.23, 0.51, 0.96], // blue
-  [0.96, 0.62, 0.10], // orange
-  [1.0, 1.0, 1.0],    // white
-  [1.0, 1.0, 1.0],    // white (weighted)
-];
+const vertex = `
+  attribute vec3 flow; attribute vec3 network; attribute float seed;
+  uniform float uTime, uMorph, uEnergy, uBurst, uSize;
+  varying float vSeed, vDepth;
+  void main() {
+    vec3 p = uMorph < 1.0 ? mix(flow, position, uMorph) : mix(position, network, uMorph - 1.0);
+    float ripple = sin(p.y * 3.5 + p.x * 2.0 + uTime * .7 + seed * 3.0);
+    p += normalize(p + .001) * ripple * uEnergy * .10;
+    p += normalize(p + .001) * uBurst * (.6 + seed) * 1.15;
+    vec4 mv = modelViewMatrix * vec4(p, 1.0);
+    gl_Position = projectionMatrix * mv;
+    gl_PointSize = clamp(uSize * (1.0 + seed * .8) / -mv.z, 1.0, 5.5);
+    vSeed = seed; vDepth = clamp((mv.z + 12.0) / 7.0, .12, 1.0);
+  }
+`;
+const fragment = `
+  uniform float uTime; varying float vSeed, vDepth;
+  void main() {
+    float d = length(gl_PointCoord - .5);
+    if(d > .5) discard;
+    vec3 copper = vec3(1.0, .24, .06);
+    vec3 cream = vec3(1.0, .87, .67);
+    vec3 color = mix(copper, cream, smoothstep(.30, .83, vSeed));
+    float alpha = smoothstep(.5, .05, d) * vDepth * (.6 + .4 * sin(vSeed*20.0 + uTime*.3));
+    gl_FragColor = vec4(color, alpha);
+  }
+`;
 
-const HeroBackground = () => {
+export default function HeroBackground({ formation = 1, energy = .5, burst = 0 }) {
   const mountRef = useRef(null);
-
+  const api = useRef(null);
+  const controls = useRef({ formation, energy, burst });
+  useEffect(() => { controls.current = { formation, energy, burst }; api.current?.update(); }, [formation, energy, burst]);
   useEffect(() => {
     const mount = mountRef.current;
-    const motionMedia = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const motionPaused = () => motionMedia.matches || document.documentElement.dataset.motion === 'paused';
-
-    const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x07080b, 0.014);
-
-    const W = () => mount.clientWidth || window.innerWidth;
-    const H = () => mount.clientHeight || window.innerHeight;
-
-    const camera = new THREE.PerspectiveCamera(62, W() / H(), 0.1, 300);
-    camera.position.z = 62;
-
+    const media = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const paused = () => media.matches || document.documentElement.dataset.motion === 'paused';
     let renderer;
-    try { renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'low-power' }); }
-    catch { return; } // Keep the CSS backdrop if WebGL is unavailable.
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-    renderer.setSize(W(), H());
-    renderer.setClearColor(0x000000, 0);
-    mount.appendChild(renderer.domElement);
-
-    // ── soft round sprite for glowing points ──
-    const makeSprite = () => {
-      const s = 64, cvs = document.createElement('canvas');
-      cvs.width = cvs.height = s;
-      const c = cvs.getContext('2d');
-      const g = c.createRadialGradient(s / 2, s / 2, 0, s / 2, s / 2, s / 2);
-      g.addColorStop(0, 'rgba(255,255,255,1)');
-      g.addColorStop(0.25, 'rgba(255,255,255,0.9)');
-      g.addColorStop(1, 'rgba(255,255,255,0)');
-      c.fillStyle = g; c.fillRect(0, 0, s, s);
-      const t = new THREE.CanvasTexture(cvs);
-      t.colorSpace = THREE.SRGBColorSpace;
-      return t;
-    };
-    const sprite = makeSprite();
-
-    // ── point cloud in a 3D box ──
-    const N = window.innerWidth < 700 ? 85 : 150;
-    const spanX = 110, spanY = 65, spanZ = 70;
-    const pos = new Float32Array(N * 3);
-    const col = new Float32Array(N * 3);
-    const sizes = new Float32Array(N);
-    const pts = [];
-    for (let i = 0; i < N; i++) {
-      const x = (Math.random() - 0.5) * spanX;
-      const y = (Math.random() - 0.5) * spanY;
-      const z = (Math.random() - 0.5) * spanZ;
-      pos.set([x, y, z], i * 3);
-      const c = COLORS[(Math.random() * COLORS.length) | 0];
-      col.set(c, i * 3);
-      sizes[i] = Math.random() * 2.4 + 1.0;
-      pts.push(new THREE.Vector3(x, y, z));
+    try { renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, powerPreference: 'low-power' }); } catch { return; }
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.6));
+    renderer.setClearColor(0x000000, 0); mount.appendChild(renderer.domElement); mount.dataset.ready = 'true';
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(38, 1, .1, 40); camera.position.set(0,.15,9.7);
+    const group = new THREE.Group(); group.rotation.set(.22,0,-.22); scene.add(group);
+    const mobile = window.innerWidth < 700;
+    const knot = new THREE.TorusKnotGeometry(1.65,.49,mobile ? 190 : 320,mobile ? 14 : 22,2,3);
+    const source = knot.attributes.position, count = source.count;
+    const flow = new Float32Array(count*3), network = new Float32Array(count*3), seeds = new Float32Array(count);
+    for(let i=0;i<count;i++) {
+      const t=i/count, a=t*Math.PI*18, s=Math.sin(i*127.1)*43758.5453, seed=s-Math.floor(s); seeds[i]=seed;
+      const radius=1.7+.35*Math.sin(a*1.5);
+      flow.set([Math.cos(a)*radius,(t-.5)*4.8,Math.sin(a)*radius],i*3);
+      const y=1-2*t,r=Math.sqrt(1-y*y),phi=i*2.399963;
+      network.set([Math.cos(phi)*r*2.4,y*2.4,Math.sin(phi)*r*2.4],i*3);
     }
-    const pGeo = new THREE.BufferGeometry();
-    pGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-    pGeo.setAttribute('color', new THREE.BufferAttribute(col, 3));
-    pGeo.setAttribute('psize', new THREE.BufferAttribute(sizes, 1));
-
-    // shader so each point keeps its own size + color, with distance attenuation
-    const pMat = new THREE.ShaderMaterial({
-      uniforms: { uMap: { value: sprite }, uScale: { value: H() } },
-      vertexShader: `
-        attribute float psize; attribute vec3 color; varying vec3 vColor;
-        uniform float uScale;
-        void main(){
-          vColor = color;
-          vec4 mv = modelViewMatrix * vec4(position,1.0);
-          gl_PointSize = psize * (uScale / -mv.z) * 0.9;
-          gl_Position = projectionMatrix * mv;
-        }`,
-      fragmentShader: `
-        uniform sampler2D uMap; varying vec3 vColor;
-        void main(){
-          vec4 tex = texture2D(uMap, gl_PointCoord);
-          if (tex.a < 0.02) discard;
-          gl_FragColor = vec4(vColor, tex.a);
-        }`,
-      transparent: true,
-      blending: THREE.AdditiveBlending,
-      depthWrite: false,
-    });
-    const points = new THREE.Points(pGeo, pMat);
-
-    // ── connecting lines between near points ──
-    const linePos = [];
-    const lineCol = [];
-    const MAXD = 26;
-    for (let i = 0; i < N; i++) {
-      for (let j = i + 1; j < N; j++) {
-        const d = pts[i].distanceTo(pts[j]);
-        if (d < MAXD) {
-          const a = 1 - d / MAXD;
-          linePos.push(pts[i].x, pts[i].y, pts[i].z, pts[j].x, pts[j].y, pts[j].z);
-          // faint white lines, alpha baked via color intensity
-          const v = 0.35 * a;
-          lineCol.push(v, v, v, v, v, v);
-        }
-      }
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute('position',source.clone()); geometry.setAttribute('flow',new THREE.BufferAttribute(flow,3)); geometry.setAttribute('network',new THREE.BufferAttribute(network,3)); geometry.setAttribute('seed',new THREE.BufferAttribute(seeds,1));
+    const uniforms={uTime:{value:0},uMorph:{value:controls.current.formation},uEnergy:{value:controls.current.energy},uBurst:{value:0},uSize:{value:29}};
+    const material = new THREE.ShaderMaterial({uniforms,vertexShader:vertex,fragmentShader:fragment,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending});
+    group.add(new THREE.Points(geometry,material));
+    const surfaceMaterial = new THREE.MeshStandardMaterial({color:0x793417,metalness:.75,roughness:.3,transparent:true,opacity:.58});
+    const surface = new THREE.Mesh(knot,surfaceMaterial); group.add(surface);
+    scene.add(new THREE.HemisphereLight(0xffe6cb,0x130809,2));
+    const light = new THREE.DirectionalLight(0xff9f60,7); light.position.set(3,4,5); scene.add(light);
+    const rim = new THREE.DirectionalLight(0xa9dcff,5); rim.position.set(-4,1,-2); scene.add(rim);
+    const networkGroup = new THREE.Group(), arcGeometries=[];
+    const arcMaterial = new THREE.LineBasicMaterial({color:0xffba8e,transparent:true,opacity:.23,blending:THREE.AdditiveBlending});
+    for(let j=0;j<9;j++) {
+      const points=Array.from({length:129},(_,i)=>{const a=i/128*Math.PI*2;return new THREE.Vector3(Math.cos(a)*2.42,Math.sin(a)*2.42,0);});
+      const geo=new THREE.BufferGeometry().setFromPoints(points);arcGeometries.push(geo);
+      const line=new THREE.LineLoop(geo,arcMaterial);line.rotation.y=j*Math.PI/9;networkGroup.add(line);
     }
-    const lGeo = new THREE.BufferGeometry();
-    lGeo.setAttribute('position', new THREE.Float32BufferAttribute(linePos, 3));
-    lGeo.setAttribute('color', new THREE.Float32BufferAttribute(lineCol, 3));
-    const lMat = new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending, depthWrite: false });
-    const lines = new THREE.LineSegments(lGeo, lMat);
-
-    const group = new THREE.Group();
-    group.add(points); group.add(lines);
-    scene.add(group);
-
-    // ── interaction + animation ──
-    const mouse = { x: 0, y: 0 };
-    const onMove = (e) => {
-      mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
-      mouse.y = (e.clientY / window.innerHeight) * 2 - 1;
+    group.add(networkGroup);
+    const orbitGeometry = new THREE.BufferGeometry().setFromPoints(Array.from({length:161},(_,i)=>{const a=i/160*Math.PI*2;return new THREE.Vector3(Math.cos(a)*3.15,Math.sin(a)*3.15,0);}));
+    const orbitMaterial=new THREE.LineBasicMaterial({color:0xffad80,transparent:true,opacity:.25});
+    const orbit=new THREE.LineLoop(orbitGeometry,orbitMaterial);orbit.rotation.set(1.15,.25,.3);group.add(orbit);
+    let raf=0,inView=true,lost=false,last=0,time=0,burstValue=0,lastBurst=controls.current.burst;
+    let yaw=0,dragX=null,targetX=0,targetY=0;
+    const canvas=renderer.domElement;
+    const draw=(dt=0)=>{
+      const state=controls.current,k=paused() ? 1 : 1-Math.exp(-dt*4);
+      uniforms.uMorph.value+=(state.formation-uniforms.uMorph.value)*k; uniforms.uEnergy.value=state.energy;uniforms.uTime.value=time;uniforms.uBurst.value=paused() ? 0 : burstValue;
+      surface.visible=Math.abs(uniforms.uMorph.value-1)<.95;surfaceMaterial.opacity=Math.max(0,1-Math.abs(uniforms.uMorph.value-1))*.58;
+      networkGroup.visible=uniforms.uMorph.value>1.1;arcMaterial.opacity=Math.max(0,uniforms.uMorph.value-1)*.23;
+      if(!paused()) {group.rotation.y+=(targetX+yaw+time*(.025+state.energy*.05)-group.rotation.y)*Math.min(1,dt*3);group.rotation.x+=(.22+targetY-group.rotation.x)*Math.min(1,dt*3);group.rotation.z=-.22+Math.sin(time*.14)*.07;}
+      renderer.render(scene,camera);
     };
-    window.addEventListener('mousemove', onMove);
-
-    const onResize = () => {
-      camera.aspect = W() / H();
-      camera.updateProjectionMatrix();
-      renderer.setSize(W(), H());
-      pMat.uniforms.uScale.value = H();
-      if (motionPaused()) renderer.render(scene, camera);
-    };
-    window.addEventListener('resize', onResize);
-
-    let raf, t = 0;
-    const clock = new THREE.Clock();
-    const animate = () => {
-      const dt = clock.getDelta();
-      t += dt;
-      // slow auto-rotate
-      group.rotation.y += dt * 0.06;
-      group.rotation.x = Math.sin(t * 0.15) * 0.08;
-      // mouse parallax on camera
-      camera.position.x += (mouse.x * 14 - camera.position.x) * 0.03;
-      camera.position.y += (-mouse.y * 9 - camera.position.y) * 0.03;
-      camera.lookAt(scene.position);
-      renderer.render(scene, camera);
-      raf = requestAnimationFrame(animate);
-    };
-    let inView = true;
-    if (!motionPaused()) animate(); else renderer.render(scene, camera);
-
-    const onVis = () => {
-      if (document.hidden) cancelAnimationFrame(raf);
-      else if (!motionPaused() && inView) { cancelAnimationFrame(raf); clock.getDelta(); animate(); }
-    };
-    document.addEventListener('visibilitychange', onVis);
-    const observer = new IntersectionObserver(([entry]) => {
-      inView = entry.isIntersecting;
-      cancelAnimationFrame(raf);
-      if (inView && !document.hidden && !motionPaused()) { clock.getDelta(); animate(); }
-    });
-    observer.observe(mount);
-    const onMotionChange = () => {
-      cancelAnimationFrame(raf);
-      if (!motionPaused() && inView && !document.hidden) { clock.getDelta(); animate(); }
-    };
-    window.addEventListener('portfolio-motion-change', onMotionChange);
-    motionMedia.addEventListener('change', onMotionChange);
-
-    return () => {
-      cancelAnimationFrame(raf);
-      window.removeEventListener('mousemove', onMove);
-      window.removeEventListener('resize', onResize);
-      document.removeEventListener('visibilitychange', onVis);
-      window.removeEventListener('portfolio-motion-change', onMotionChange);
-      motionMedia.removeEventListener('change', onMotionChange);
-      observer.disconnect();
-      renderer.dispose(); pGeo.dispose(); lGeo.dispose(); pMat.dispose(); lMat.dispose(); sprite.dispose();
-      if (renderer.domElement.parentNode) renderer.domElement.parentNode.removeChild(renderer.domElement);
-    };
+    const tick=now=>{const dt=Math.min((now-last)/1000||.016,.05);last=now;time+=dt;burstValue*=Math.exp(-dt*2.1);draw(dt);raf=requestAnimationFrame(tick);};
+    const sync=()=>{cancelAnimationFrame(raf);if(!lost) draw();if(!paused()&&inView&&!document.hidden&&!lost) {last=performance.now();raf=requestAnimationFrame(tick);}};
+    api.current={update:()=>{if(controls.current.burst!==lastBurst) {lastBurst=controls.current.burst;burstValue=1;}if(paused()) draw();}};
+    const resize=()=>{const width=mount.clientWidth||600,height=mount.clientHeight||600;camera.aspect=width/height;camera.position.z=width<420?10.7:9.7;camera.updateProjectionMatrix();renderer.setSize(width,height);uniforms.uSize.value=mobile?22:29;draw();};
+    const resizeObserver=new ResizeObserver(resize);resizeObserver.observe(mount);
+    const observer=new IntersectionObserver(([entry])=>{inView=entry.isIntersecting;sync();});observer.observe(mount);
+    const move=event=>{if(paused()||event.pointerType==='touch')return;const r=canvas.getBoundingClientRect();targetX=((event.clientX-r.left)/r.width-.5)*.7;targetY=((event.clientY-r.top)/r.height-.5)*.35;if(dragX!==null){yaw+=(event.clientX-dragX)*.008;dragX=event.clientX;}};
+    const down=event=>{if(event.pointerType==='touch'||paused())return;dragX=event.clientX;canvas.setPointerCapture(event.pointerId);};
+    const up=()=>{dragX=null;},leave=()=>{targetX=0;targetY=0;};
+    const contextLost=event=>{event.preventDefault();lost=true;mount.dataset.ready='false';cancelAnimationFrame(raf);};
+    const contextRestored=()=>{lost=false;mount.dataset.ready='true';sync();};
+    canvas.addEventListener('pointermove',move);canvas.addEventListener('pointerdown',down);canvas.addEventListener('pointerup',up);canvas.addEventListener('pointercancel',up);canvas.addEventListener('pointerleave',leave);canvas.addEventListener('webglcontextlost',contextLost);canvas.addEventListener('webglcontextrestored',contextRestored);
+    window.addEventListener('portfolio-motion-change',sync);media.addEventListener('change',sync);document.addEventListener('visibilitychange',sync);resize();sync();
+    return ()=>{api.current=null;cancelAnimationFrame(raf);resizeObserver.disconnect();observer.disconnect();window.removeEventListener('portfolio-motion-change',sync);media.removeEventListener('change',sync);document.removeEventListener('visibilitychange',sync);canvas.removeEventListener('pointermove',move);canvas.removeEventListener('pointerdown',down);canvas.removeEventListener('pointerup',up);canvas.removeEventListener('pointercancel',up);canvas.removeEventListener('pointerleave',leave);canvas.removeEventListener('webglcontextlost',contextLost);canvas.removeEventListener('webglcontextrestored',contextRestored);geometry.dispose();knot.dispose();material.dispose();surfaceMaterial.dispose();arcGeometries.forEach(g=>g.dispose());arcMaterial.dispose();orbitGeometry.dispose();orbitMaterial.dispose();renderer.dispose();canvas.remove();};
   }, []);
-
-  return (
-    <div className="absolute inset-0 z-0 overflow-hidden bg-[#07080b]">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_62%_45%,#101119_0%,#07080b_72%)]" />
-      <div ref={mountRef} className="absolute inset-0 w-full h-full" />
-    </div>
-  );
-};
-
-export default HeroBackground;
+  return <div className="field-webgl" ref={mountRef} aria-hidden="true"/>;
+}

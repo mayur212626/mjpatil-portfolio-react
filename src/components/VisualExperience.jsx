@@ -24,7 +24,7 @@ export function MotionControl() {
     try { localStorage.setItem('portfolio-motion', paused ? 'paused' : 'running'); } catch { /* Storage is optional. */ }
   }, [paused, reduced]);
   useEffect(() => {
-    const targets = document.querySelectorAll('.system-explorer, .visual-studio, .project-visual');
+    const targets = document.querySelectorAll('.system-explorer, .visual-studio, .project-visual, .project-art-cover');
     const observer = new IntersectionObserver(entries => entries.forEach(entry => {
       entry.target.classList.toggle('visual-in-view', entry.isIntersecting);
     }), { rootMargin: '40px' });
