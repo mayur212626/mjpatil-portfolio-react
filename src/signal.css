@@ -83,3 +83,9 @@ html[data-motion=paused] .cover-art { transform: none; }
 #project-anomaly-detection { --project-accent: #78bfff !important; }
 #project-clinical-lab-predictor { --project-accent: #7cdce8 !important; }
 #project-signal-ai { --project-accent: #aaa0ff !important; }
+.visual-studio { --studio-accent: #91b5ff !important; }
+.contact-intro > p:not(.eyebrow) { color: #b2c4e5; }
+.contact-intro .eyebrow,.contact-form .form-note,.contact-form .form-feedback { color: #9eafd0; }
+.contact-form input::placeholder,.contact-form textarea::placeholder { color: #8d9cba; }
+.contact-form label span { color: #a5bcff; }
+.contact-form input:focus,.contact-form textarea:focus { border-color: #9acaff; }
