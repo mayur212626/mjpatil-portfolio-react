@@ -58,7 +58,7 @@ export function EvidenceSummary({ projectId }) {
   if (projectId === 'anomaly-detection') return <div className="evidence-summary">
     <p className="verification-label"><span/>Captured API response</p>
     <dl className="evidence-metrics"><div><dt>DoS example</dt><dd className="metric-word">Critical</dd></div><div><dt>Anomaly score</dt><dd>-0.1861</dd></div></dl>
-    <p>A real response to the synthetic DoS preset, captured Oct 3, 2026. This is a serving demonstration, not a detection-accuracy benchmark.</p>
+    <p>A real response to the synthetic DoS preset, captured Oct 14, 2026. This is a serving demonstration, not a detection-accuracy benchmark.</p>
     <a href="/evidence/verification-notes.md" target="_blank" rel="noopener noreferrer">View evidence notes ↗</a>
   </div>;
   return <div className="evidence-summary">
@@ -74,14 +74,14 @@ export default function ProjectEvidence({ projectId, title }) {
   const signal = projectId === 'signal-ai';
   const [view, setView] = useState(clinical ? 'Evaluation' : 'Screenshot');
   const dialog = useRef(null);
-  const screenshot = `/evidence/${clinical ? 'clinical' : 'anomaly'}-demo.jpg`;
+  const screenshot = `/evidence/${clinical ? 'clinical' : 'anomaly'}-demo-2026-10-14.jpg`;
   const caption = clinical ? 'Actual deployed model response to a synthetic preset. Separate from the baseline evaluation.' : 'Actual scoring interface with the synthetic DoS preset and its returned verdict.';
   return <div className="project-visual">
     <div className="visual-topline"><span className="visual-window-dots" aria-hidden="true"><i/><i/><i/></span><span>{signal ? 'SIGNAL / WORKFLOW' : clinical ? 'CLINICAL / MODEL LAB' : 'ANOMALY / SCORING CONSOLE'}</span><span className="visual-index">{signal ? '03' : clinical ? '02' : '01'}</span></div>
     {clinical && <div className="evidence-tabs" role="group" aria-label="Clinical project evidence">{['Evaluation', 'Screenshot'].map(label => <button key={label} type="button" aria-pressed={view === label} onClick={() => setView(label)}>{label}</button>)}</div>}
-    {signal ? <SignalGraphic/> : clinical && view === 'Evaluation' ? <RocChart/> : <figure className="project-capture"><button type="button" className="capture-button" onClick={() => dialog.current.showModal()} aria-label={`Enlarge ${title} screenshot`}><img src={screenshot} width="1265" height={clinical ? '886' : '821'} loading="lazy" decoding="async" alt={`${title}: ${caption}`}/><span className="capture-enlarge">View full screenshot ↗</span></button><figcaption>{caption}<span>Captured Oct 3, 2026 · mjpatil.com</span></figcaption></figure>}
+    {signal ? <SignalGraphic/> : clinical && view === 'Evaluation' ? <RocChart/> : <figure className="project-capture"><button type="button" className="capture-button" onClick={() => dialog.current.showModal()} aria-label={`Enlarge ${title} screenshot`}><img src={screenshot} width="1265" height={clinical ? '891' : '824'} loading="lazy" decoding="async" alt={`${title}: ${caption}`}/><span className="capture-enlarge">View full screenshot ↗</span></button><figcaption>{caption}<span>Captured Oct 14, 2026 · live API</span></figcaption></figure>}
     {clinical && view === 'Evaluation' && <p className="visual-footnote">One small held-out split. The interval reflects test-sample uncertainty for this fitted model. Research only.</p>}
     {signal && <p className="visual-footnote">Interactive architecture illustration based on the repository. No generated results are represented.</p>}
-    {!signal && <dialog ref={dialog} className="screenshot-dialog" aria-label={`${title} screenshot`} onClick={event => { if (event.target === event.currentTarget) dialog.current.close(); }}><div><h4>{title}</h4><button type="button" onClick={() => dialog.current.close()} autoFocus aria-label="Close screenshot">Close ✕</button></div><img src={screenshot} alt={caption} loading="lazy"/><p>{caption} Captured Oct 3, 2026.</p></dialog>}
+    {!signal && <dialog ref={dialog} className="screenshot-dialog" aria-label={`${title} screenshot`} onClick={event => { if (event.target === event.currentTarget) dialog.current.close(); }}><div><h4>{title}</h4><button type="button" onClick={() => dialog.current.close()} autoFocus aria-label="Close screenshot">Close ✕</button></div><img src={screenshot} alt={caption} loading="lazy"/><p>{caption} Captured Oct 14, 2026.</p></dialog>}
   </div>;
 }

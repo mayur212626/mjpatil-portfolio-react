@@ -4,9 +4,11 @@ Checked October 3, 2026.
 
 ## Interface captures
 
-`anomaly-demo.jpg` and `clinical-demo.jpg` are actual browser screenshots of the deployed portfolio's project demos at https://mjpatil.com. They are not generated mockups. Both use synthetic, predefined inputs. Their displayed predictions are individual serving examples, not accuracy measurements.
+Interface captures refreshed October 14, 2026, after the pearl and violet design update.
 
-The DoS flood example returned `CRITICAL`, anomaly verdict `-1`, and anomaly score `-0.1861`. The clinical high-risk preset displayed 75% risk from model v1.0.0. These are historical captures; later model versions can respond differently.
+`anomaly-demo-2026-10-14.jpg` and `clinical-demo-2026-10-14.jpg` are actual browser screenshots of the current portfolio interfaces, captured in the local preview using real responses from the deployed APIs. They are not generated mockups. Both use synthetic, predefined inputs. Their displayed predictions are individual serving examples, not accuracy measurements.
+
+The DoS flood example returned `CRITICAL`, anomaly verdict `-1`, and anomaly score `-0.1861`. The clinical high-risk preset displayed 75% risk from model v1.0.0. These fresh captures use the same synthetic presets as the earlier screenshots. Later model versions can respond differently.
 
 ## Clinical evaluation
 
