@@ -335,8 +335,26 @@ export const projects = [
     ]
   },
   {
-    "id": "stock-lstm",
+    "id": "fifa-wc2026-predictor",
     "number": "04",
+    "badge": null,
+    "title": "World Cup Forecasting & Simulation",
+    "description": "Model international football results with Dixon-Coles, simulate tournament progression with Monte Carlo, and explore Bayesian uncertainty. A Streamlit dashboard presents forecasts, backtests, and the final tournament story.",
+    "techTags": [
+      "Python",
+      "Dixon-Coles",
+      "Monte Carlo",
+      "Streamlit"
+    ],
+    "links": {
+      "github": "https://github.com/mayur212626/fifa-wc2026-predictor",
+      "demo": "https://wc2026-title-race.onrender.com"
+    },
+    "isFlagship": false
+  },
+  {
+    "id": "stock-lstm",
+    "number": "05",
     "badge": null,
     "title": "Multi-Modal Stock Price Prediction (LSTM)",
     "description": "A stock-forecasting project combining technical indicators and financial-news sentiment with LSTM modeling on AWS SageMaker.",
@@ -353,24 +371,7 @@ export const projects = [
     },
     "isFlagship": false
   },
-  {
-    "id": "fifa-wc2026-predictor",
-    "number": "05",
-    "badge": null,
-    "title": "FIFA World Cup 2026 Predictor",
-    "description": "A Bayesian forecasting engine for the 2026 World Cup using Dixon-Coles modeling and Monte Carlo simulation to project match outcomes and tournament progression.",
-    "techTags": [
-      "Python",
-      "Bayesian Modeling",
-      "Monte Carlo",
-      "Dixon-Coles"
-    ],
-    "links": {
-      "github": "https://github.com/mayur212626/fifa-wc2026-predictor",
-      "demo": "https://wc2026-title-race.onrender.com"
-    },
-    "isFlagship": false
-  },
+
   {
     "id": "ais-ship-prediction",
     "number": "06",
