@@ -156,7 +156,7 @@ html[data-motion=paused] .cover-art { transform: none; }
 .observatory-hero .signal-masthead > span:first-child { color: #25242a; }.observatory-hero .signal-masthead i { background: #695186; box-shadow: none; }
 .observatory-hero .signal-composition { grid-template-columns: .9fr 1.1fr; min-height: 570px; }
 .observatory-hero .signal-editorial { padding: 38px 0; }.observatory-hero .signal-kicker { margin-bottom: 24px; color: #625d69; font: 11px ui-monospace,monospace; }
-.observatory-hero .signal-editorial h1 { color: #25242a; font-size: clamp(110px,11.6vw,180px); line-height: .84; letter-spacing: -.085em; font-weight: 500; }
+.observatory-hero .signal-editorial h1 { color: #25242a; font-size: clamp(110px,11.6vw,180px); line-height: 1.04; letter-spacing: -.085em; font-weight: 500; }
 .observatory-hero .signal-editorial h1 em { color: #25242a; background: none; -webkit-text-fill-color: currentColor; font-style: normal; font-weight: 400; letter-spacing: -.08em; padding: 0 12px 4px 0; }
 .observatory-hero .signal-period { color: #695186; }.observatory-hero .signal-intro { margin-top: 34px; gap: 16px; }.observatory-hero .signal-intro p { font-size: 20px; line-height: 1.4; color: #3f3b46; }
 .observatory-hero .signal-intro div > span { font-size: 9px; color: #706a77; line-height: 1.8; margin-top: 14px; }.observatory-hero .editorial-cross { color: #695186; }
