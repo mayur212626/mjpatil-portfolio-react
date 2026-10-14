@@ -46,6 +46,6 @@ export default function Projects() {
     <div className="featured-projects">{selected.map(project => <div key={project.id} hidden={filter !== 'All work' && category(project) !== filter}><ProjectCard project={project} /></div>)}</div>
     {filter !== 'All work' && <button className="reset-filter" type="button" onClick={() => setFilter('All work')}>Show all featured projects →</button>}
     <details className="more-projects"><summary>More explorations <span>Forecasting & distributed data</span></summary><div className="additional-projects">{projects.slice(4).map(project => <article key={project.id}><h3>{project.title}</h3><p>{project.description}</p><ProjectLinks project={project} />{!project.links.github && <p className="proof-note">Repository link coming soon.</p>}</article>)}</div></details>
-    <a className="all-repos" href={socialLinks.github} target="_blank" rel="noopener noreferrer">Explore all repositories ↗</a>
+    <nav className="case-study-directory" aria-label="Read project case studies"><p className="eyebrow">Project field notes</p>{selected.map(project => <a key={project.id} href={`/projects/${project.id}/`}>{project.title} ↗</a>)}</nav><a className="all-repos" href={socialLinks.github} target="_blank" rel="noopener noreferrer">Explore all repositories ↗</a>
   </div></section>;
 }

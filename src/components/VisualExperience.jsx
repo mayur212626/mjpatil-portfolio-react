@@ -11,7 +11,7 @@ export function MotionControl() {
   const [paused, setPaused] = useState(() => {
     try { return localStorage.getItem('portfolio-motion') === 'paused'; } catch { return false; }
   });
-  const [reduced, setReduced] = useState(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  const [reduced, setReduced] = useState(() => typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   useEffect(() => {
     const media = window.matchMedia('(prefers-reduced-motion: reduce)');
     const update = () => setReduced(media.matches);
