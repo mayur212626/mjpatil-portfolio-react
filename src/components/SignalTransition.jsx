@@ -1,21 +1,11 @@
-import { useEffect, useRef } from 'react';
-
+const studies = [
+  { id: 'anomaly-detection', number: '01', title: 'Find the unusual.', category: 'Log anomaly detection', evidence: 'Inspect a captured API response', symbol: '◌' },
+  { id: 'clinical-lab-predictor', number: '02', title: 'Question the prediction.', category: 'Clinical ML research', evidence: 'Explore a reproduced evaluation', symbol: '⊕' },
+  { id: 'signal-ai', number: '03', title: 'Connect the conversation.', category: 'Multi-agent language models', evidence: 'Follow the five-agent workflow', symbol: '✳' },
+];
 export default function SignalTransition() {
-  const ref=useRef(null);
-  useEffect(()=>{
-    const node=ref.current;
-    let pending=false,frame=0;
-    const update=()=>{
-      pending=false;
-      const r=node.getBoundingClientRect(),p=Math.max(0,Math.min(1,(innerHeight-r.top)/(innerHeight+r.height)));
-      node.style.setProperty('--transit',p);
-    };
-    const scroll=()=>{if(!pending){pending=true;frame=requestAnimationFrame(update);}};
-    window.addEventListener('scroll',scroll,{passive:true});window.addEventListener('resize',scroll);update();
-    return()=>{cancelAnimationFrame(frame);window.removeEventListener('scroll',scroll);window.removeEventListener('resize',scroll);};
-  },[]);
-  return <section ref={ref} className="signal-transition" aria-label="From exploration to evidence">
-    <div className="transition-stripe" aria-hidden="true"><span>DATA / MODELS / SYSTEMS / CURIOSITY / </span><span>DATA / MODELS / SYSTEMS / CURIOSITY / </span></div>
-    <div className="transition-statement"><span className="transition-index">[ FROM EXPLORATION ]</span><p>Less noise.<br/><em>More meaning.</em></p><span className="transition-end">[ TO EVIDENCE ] ↘</span></div>
+  return <section className="signal-transition observatory-index" aria-label="Selected work index">
+    <div className="index-heading"><span>From curiosity to evidence</span><span>Selected studies / 01 to 03</span></div>
+    <div className="index-studies">{studies.map(study => <a key={study.id} href={`#project-${study.id}`} className="index-study" onClick={event=>{if(event.ctrlKey||event.metaKey||event.shiftKey||event.altKey)return;event.preventDefault();window.dispatchEvent(new CustomEvent('portfolio:project',{detail:`project-${study.id}`}));}}><span className="index-number">/{study.number}</span><span className="index-symbol" aria-hidden="true">{study.symbol}</span><span className="index-category">{study.category}</span><h2>{study.title}</h2><span className="index-evidence">{study.evidence}<span aria-hidden="true">↗</span></span></a>)}</div>
   </section>;
 }
