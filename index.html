@@ -17,13 +17,13 @@
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@graph": [{"@type":"ProfilePage","@id":"https://mjpatil.com/#profile","url":"https://mjpatil.com/","name":"Mayur Patil | Data Scientist & ML Engineer","mainEntity":{"@id":"https://mjpatil.com/#person"}},
+      "@graph": [{"@type":"ProfilePage","@id":"https://mjpatil.com/#profile","url":"https://mjpatil.com/","name":"Mayur Patil | Data Scientist & ML Engineer","mainEntity":{"@id":"https://mjpatil.com/#person"},"primaryImageOfPage":{"@id":"https://mjpatil.com/#portrait"}},
         {
           "@type": "Person",
           "@id": "https://mjpatil.com/#person",
           "name": "Mayur Patil",
           "url": "https://mjpatil.com/",
-          "image": "https://mjpatil.com/og.png",
+          "image": {"@type":"ImageObject","@id":"https://mjpatil.com/#portrait","url":"https://mjpatil.com/images/mayur-patil.png","contentUrl":"https://mjpatil.com/images/mayur-patil.png","name":"Mayur Patil","caption":"Portrait of Mayur Patil, data scientist and ML engineer"},
           "jobTitle": "Data Scientist & ML Engineer",
           "description": "Data Scientist & ML Engineer. M.S. Data Science @ The George Washington University. Originally from Lonkheda and Shahada, Nandurbar, Maharashtra, India; studied in Pune and interned in Bengaluru. Building large-scale ML and data systems: PySpark pipelines, deep learning, and governed production deployments.",
           "alumniOf": {
