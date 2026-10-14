@@ -256,5 +256,5 @@ html[data-motion=running] .observatory-hero .signal-editorial { animation: obser
 #demo svg circle:first-child { stroke: #dcd5e2; }
 #demo svg circle:nth-child(2) { stroke: #806399; }
 :is(#demo,#anomaly) [style*="color:"] { color: #695186 !important; border-color: #69518655 !important; background: #e9e1ef !important; }
-#anomaly span[style*="background:"] { background: #806399 !important; }
+#anomaly span.w-3[style*="background:"] { background: #806399 !important; }
 :is(#demo,#anomaly) .font-black { font-weight: 600; }
