@@ -281,3 +281,5 @@ html[data-motion=running] .observatory-hero .signal-editorial { animation: obser
 @media (min-width:761px) and (max-width:1100px) { .index-studies { grid-template-columns: repeat(2,1fr); }.index-study:nth-child(3) { border-left: 0; }.index-study:nth-child(n+3) { border-top: 1px solid #eeede825; } }
 @media (max-width:760px) { .index-studies { grid-template-columns: 1fr; }.fifa-backtest-grid { gap: 12px; }.fifa-backtest { padding: 18px 12px; }.fifa-backtest h4 { font-size: 27px; flex-direction: column; align-items: flex-start; }.fifa-score-row { font-size: 10px; }.fifa-backtests .graphic-heading { font-size: 9px; } }
 @media (prefers-reduced-motion:reduce) { .fifa-ball-sculpture,.fifa-orbit { animation: none; } }
+
+.case-study-directory { display:flex;flex-wrap:wrap;gap:18px 28px;margin-top:32px;padding:28px 0;border-top:1px solid #25242a20; }.case-study-directory p { width:100%; }.case-study-directory a { font-size:13px;color:#695186;text-decoration:underline;text-underline-offset:5px; }
