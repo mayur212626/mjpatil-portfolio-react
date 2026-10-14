@@ -1,16 +1,44 @@
-# React + Vite
+# Mayur Patil | Data Scientist & ML Engineer
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+[Mayur Patil's portfolio](https://mjpatil.com/) brings together data engineering, applied machine learning, multi-agent language models, and sports forecasting projects.
 
-Currently, two official plugins are available:
+Mayur is pursuing an M.S. in Data Science at The George Washington University and is based in Falls Church, Virginia. The portfolio includes source repositories, evaluation evidence, project limitations, and working model demonstrations.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Featured case studies
 
-## React Compiler
+| Project | Read the case study | Source |
+| --- | --- | --- |
+| Large-Scale Log Anomaly Detection | [Data pipelines, offline analysis, and the deployed scoring service](https://mjpatil.com/projects/anomaly-detection/) | [Repository](https://github.com/mayur212626/anomaly-detection) |
+| Clinical Lab Abnormality Predictor | [Research workflow, independent baseline, and limitations](https://mjpatil.com/projects/clinical-lab-predictor/) | [Repository](https://github.com/mayur212626/clinical-lab-predictor) |
+| SIGNAL: Sales Intelligence Layer | [Five-agent workflow for sales-call transcripts](https://mjpatil.com/projects/signal-ai/) | [Repository](https://github.com/mayur212626/signal-ai) |
+| World Cup Forecasting & Simulation | [Dixon-Coles modeling, simulation, and historical backtests](https://mjpatil.com/projects/fifa-wc2026-predictor/) | [Repository](https://github.com/mayur212626/fifa-wc2026-predictor) |
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Performance claims have explicit scope. The anomaly API example is a serving demonstration on synthetic traffic, the clinical baseline is separate from the deployed model, SIGNAL has no published human-reviewed quality benchmark, and the World Cup forecast was frozen after opening day.
 
-## Expanding the ESLint configuration
+## About Mayur
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- [Background, education, and portrait](https://mjpatil.com/#about)
+- [LinkedIn](https://www.linkedin.com/in/mayurpatil26/)
+- [GitHub](https://github.com/mayur212626)
+- [Resume](https://mjpatil.com/Mayur_Patil_Resume.pdf)
+
+## Run locally
+
+Requires Node.js compatible with the project's Vite version.
+
+```sh
+npm ci
+npm run dev
+```
+
+## Check and build
+
+```sh
+npm run lint
+npm run build
+npm run preview
+```
+
+The build prerenders the homepage, generates four static project case-study pages, copies the portrait to a stable descriptive URL, and creates the sitemap with an image entry. The browser adds the interactive React interface and the lazy-loaded Three.js sculpture.
+
+Cloudflare Workers serves the generated `dist` directory using `wrangler.jsonc`. Unknown pages return a real 404 response.
