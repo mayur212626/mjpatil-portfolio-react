@@ -233,3 +233,7 @@ html[data-motion=running] .observatory-hero .signal-editorial { animation: obser
  .observatory-hero .signal-intro { order: 4; margin-top: 25px; }
  .observatory-hero .signal-actions { order: 5; margin-bottom: 25px; }
 }
+
+.cover-bottom > span:last-child { font-size: 8px; }
+.cover-art svg { max-height: 290px; }
+@media (max-width:760px) { .cover-bottom > span:last-child { font-size: 7px; } }
