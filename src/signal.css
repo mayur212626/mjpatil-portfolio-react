@@ -237,3 +237,24 @@ html[data-motion=running] .observatory-hero .signal-editorial { animation: obser
 .cover-bottom > span:last-child { font-size: 8px; }
 .cover-art svg { max-height: 290px; }
 @media (max-width:760px) { .cover-bottom > span:last-child { font-size: 7px; } }
+
+/* Live experiments share the observatory's pearl and violet palette. */
+#demo,#anomaly { background: #eeede8; background-image: none; color: #25242a; border-color: #25242a1c; }
+:is(#demo,#anomaly) [class*="text-white"] { color: #615967; }
+:is(#demo,#anomaly) h2 { color: #25242a; text-transform: none; }
+:is(#demo,#anomaly) .font-mono { color: #403749; }
+:is(#demo,#anomaly) .rounded-2xl { background: #f7f5f0; border: 1px solid #25242a22; border-radius: 8px; box-shadow: 0 10px 30px #25242a05; }
+:is(#demo,#anomaly) .bg-white\/5 { background: #ebe6ef; }
+:is(#demo,#anomaly) .rounded-2xl.bg-white\/5 { background: #f7f5f0; }
+:is(#demo,#anomaly) [class*="border-white"] { border-color: #69518628; }
+:is(#demo,#anomaly) button { border-color: #69518638; color: #5e4677; background: #eee8f3; border-radius: 5px; font-weight: 500; }
+:is(#demo,#anomaly) button:hover { border-color: #695186; background: #e4daec; color: #47305f; }
+:is(#demo,#anomaly) button[class*="w-full"] { background: #695186; color: #faf8fc; border: 1px solid #695186; border-radius: 5px; font-weight: 600; text-transform: none; }
+:is(#demo,#anomaly) button[class*="w-full"]:hover { background: #594271; border-color: #594271; transform: none; }
+#demo input[type=range] { accent-color: #806399; }
+#anomaly button[class*="border-[#ff2a2a]"] { border-color: #695186; background: #e4daec; color: #47305f; }
+#demo svg circle:first-child { stroke: #dcd5e2; }
+#demo svg circle:nth-child(2) { stroke: #806399; }
+:is(#demo,#anomaly) [style*="color:"] { color: #695186 !important; border-color: #69518655 !important; background: #e9e1ef !important; }
+#anomaly span[style*="background:"] { background: #806399 !important; }
+:is(#demo,#anomaly) .font-black { font-weight: 600; }
