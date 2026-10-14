@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { flushSync } from 'react-dom';
 import { projects, socialLinks } from '../data/portfolioData';
 import { projectStories } from '../data/projectStories';
 import ProjectEvidence, { EvidenceSummary } from './ProjectEvidence';
@@ -19,6 +20,22 @@ function ProjectCard({ project }) {
 export default function Projects() {
   const [filter, setFilter] = useState('All work');
   const selected = projects.slice(0, 3);
+  useEffect(() => {
+    const revealTarget = id => {
+      if (id.startsWith('project-')) {
+        flushSync(() => setFilter('All work'));
+        document.getElementById(id)?.scrollIntoView({ block: 'start', behavior: 'instant' });
+      }
+    };
+    const hashChange = () => revealTarget(window.location.hash.slice(1));
+    const selectProject = event => {
+      window.history.pushState(null, '', `#${event.detail}`);
+      revealTarget(event.detail);
+    };
+    window.addEventListener('hashchange', hashChange);
+    window.addEventListener('portfolio:project', selectProject);
+    return () => { window.removeEventListener('hashchange', hashChange); window.removeEventListener('portfolio:project', selectProject); };
+  }, []);
   // Cards remain mounted so direct project links and expanded case studies survive filtering.
   return <section id="projects" className="selected-work"><div className="section-shell">
     <div className="section-heading"><div><p className="eyebrow">01 / The work archive</p><h2>Ideas, put<br/><span>to the test.</span></h2></div><p>Three explorations at the intersection of data, models, and useful systems. Step inside the work, then inspect the evidence.</p></div>
