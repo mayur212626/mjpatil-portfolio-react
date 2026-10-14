@@ -2,7 +2,7 @@ import { createServer } from 'vite';
 import react from '@vitejs/plugin-react';
 import { createElement } from 'react';
 import { renderToString } from 'react-dom/server';
-import { readFile, writeFile, mkdir, readdir } from 'node:fs/promises';
+import { readFile, writeFile, mkdir, copyFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 
 const escape = value => String(value).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
@@ -42,9 +42,8 @@ export default function searchPages() {
         let rendered = renderToString(createElement(App));
         // The lazy WebGL scene mounts in the browser; do not publish React's SSR diagnostic template.
         rendered = rendered.replace(/<template[\s\S]*?<\/template>/g, '');
-        const avatar = (await readdir(resolve(outDir, 'assets'))).find(name => /^avatar-.*\.png$/.test(name));
-        if (!avatar) throw new Error('Missing built portrait asset');
-        rendered = rendered.replaceAll('/src/assets/about/avatar.png', `/assets/${avatar}`);
+        await mkdir(resolve(outDir, 'images'), {recursive:true});
+        await copyFile(resolve(root, 'src/assets/about/avatar.png'), resolve(outDir, 'images/mayur-patil.png'));
         if (!rendered.includes('id="projects"') || !rendered.includes('Mayur')) throw new Error('Homepage prerender failed');
         html = html.replace('<div id="root"></div>', `<div id="root">${rendered}</div>`);
         await writeFile(htmlPath, html);
@@ -66,7 +65,7 @@ export default function searchPages() {
         }
         await writeFile(resolve(outDir, '404.html'), '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="robots" content="noindex"><title>Page not found | Mayur Patil</title></head><body><h1>Page not found</h1><p>This page does not exist.</p><a href="/">Return to Mayur Patil portfolio</a></body></html>');
         const urls = [origin+'/', ...featured.map(project=>`${origin}/projects/${project.id}/`), origin+'/Mayur_Patil_Resume.pdf'];
-        await writeFile(resolve(outDir,'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls.map(url=>`<url><loc>${url}</loc></url>`).join('')}</urlset>\n`);
+        await writeFile(resolve(outDir,'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">${urls.map(url=>`<url><loc>${url}</loc>${url === origin+'/' ? `<image:image><image:loc>${origin}/images/mayur-patil.png</image:loc></image:image>` : ''}</url>`).join('')}</urlset>\n`);
         console.log(`Prerendered homepage and ${featured.length} static project case studies.`);
       } finally { await server.close(); }
     },
