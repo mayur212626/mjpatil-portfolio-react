@@ -89,7 +89,7 @@ export default function HeroBackground({ formation = 0, energy = .4, burst = 0 }
       blades.forEach((blade, i) => { const angle = i / 24 * Math.PI * 2, spread = stopped ? 0 : impulse * .65; blade.position.set(Math.cos(angle) * spread, Math.sin(time * .5 + i * .26) * state.energy * .035, Math.sin(angle) * spread); });
       groups[1].rotation.z = time * .08; groups[2].rotation.y = -time * .04; renderer.render(scene, camera);
     };
-    const tick = now => { const dt = Math.min((now - last) / 1000 || .016, .05); last = now; time += dt; impulse *= Math.exp(-dt * 1.5); draw(dt); raf = requestAnimationFrame(tick); };
+    const tick = now => { raf = requestAnimationFrame(tick); const elapsed = now - last; if (elapsed < 1000 / 30) return; const dt = Math.min(elapsed / 1000, .05); last = now; time += dt; impulse *= Math.exp(-dt * 1.5); draw(dt); };
     const sync = () => { cancelAnimationFrame(raf); if (!lost) draw(); if (!paused() && inView && !document.hidden && !lost) { last = performance.now(); raf = requestAnimationFrame(tick); } };
     api.current = { update: () => { if (controls.current.burst !== lastBurst) { lastBurst = controls.current.burst; impulse = paused() ? 0 : 1; } if (paused()) draw(); } };
     const resize = () => { const w = mount.clientWidth || 600, h = mount.clientHeight || 600; camera.aspect = w / h; camera.position.z = w / h < .8 ? 12 : 10; camera.updateProjectionMatrix(); renderer.setSize(w, h); draw(); };
