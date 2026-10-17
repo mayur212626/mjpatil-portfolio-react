@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import TrafficField from './TrafficField';
 import useApiWarmup from '../hooks/useApiWarmup';
 
 // Live call to the deployed Log Anomaly Detection API (project 01).
@@ -53,7 +54,13 @@ const AnomalyLiveDemo = () => {
   const [result, setResult] = useState(null);
   const [status, setStatus] = useState('idle'); // idle | loading | waking | done | error
 
+  const request = useRef(null);
+  useEffect(() => () => request.current?.abort(), []);
+  const chooseScenario = value => { request.current?.abort(); setScenario(value); setResult(null); setStatus('idle'); };
   const score = async () => {
+    request.current?.abort();
+    const controller = new AbortController(); request.current = controller;
+    const timeout = setTimeout(() => controller.abort('timeout'), 65000);
     setStatus('loading');
     setResult(null);
     // Render free tier sleeps: first call may take ~50s. Warn if slow.
@@ -61,17 +68,20 @@ const AnomalyLiveDemo = () => {
     try {
       const res = await fetch(`${API}/score`, {
         method: 'POST',
+        signal: controller.signal,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(SCENARIOS[scenario].entry),
       });
       clearTimeout(slowTimer);
       if (!res.ok) throw new Error(`API ${res.status}`);
-      setResult(await res.json());
+      const data = await res.json();
+      if (controller.signal.aborted || request.current !== controller) return;
+      if (!Number.isFinite(data.score) || ![true, false, 0, 1].includes(data.anomaly)) throw new Error('Invalid score response');
+      setResult({ ...data, anomaly: data.anomaly === true || data.anomaly === 1 });
       setStatus('done');
     } catch {
-      clearTimeout(slowTimer);
-      setStatus('error');
-    }
+      if (request.current === controller && (!controller.signal.aborted || controller.signal.reason === 'timeout')) setStatus('error');
+    } finally { clearTimeout(slowTimer); clearTimeout(timeout); }
   };
 
   const active = SCENARIOS[scenario];
@@ -101,6 +111,7 @@ const AnomalyLiveDemo = () => {
           <p className="text-white/30 text-xs mt-2">Research prototype · synthetic traffic</p>
         </div>
 
+        <TrafficField scenario={scenario} result={result} status={status}/>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
           {/* Scenario picker */}
           <div data-aos="fade-right" className="bg-white/5 border border-white/10 rounded-2xl p-6 md:p-8">
@@ -108,7 +119,8 @@ const AnomalyLiveDemo = () => {
               {Object.keys(SCENARIOS).map((s) => (
                 <button
                   key={s}
-                  onClick={() => { setScenario(s); setResult(null); setStatus('idle'); }}
+                  onClick={() => chooseScenario(s)}
+                  aria-pressed={scenario === s}
                   className={`px-4 py-1.5 rounded-full text-xs font-bold border transition-colors ${
                     scenario === s
                       ? 'border-[#ff2a2a] text-white bg-[#ff2a2a]/10'
@@ -149,7 +161,7 @@ const AnomalyLiveDemo = () => {
           </div>
 
           {/* Result */}
-          <div data-aos="fade-left" className="bg-white/5 border border-white/10 rounded-2xl p-6 md:p-8 min-h-[340px] flex flex-col items-center justify-center text-center">
+          <div aria-live="polite" aria-atomic="true" aria-busy={status === 'loading' || status === 'waking'} data-aos="fade-left" className="bg-white/5 border border-white/10 rounded-2xl p-6 md:p-8 min-h-[340px] flex flex-col items-center justify-center text-center">
             {status === 'error' && (
               <p className="text-white/60 text-sm">API unreachable. The free-tier host may be cold; try again in ~30s.</p>
             )}

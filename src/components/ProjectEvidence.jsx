@@ -22,7 +22,7 @@ function RocChart() {
       {[0, .25, .5, .75, 1].map(t => <g key={t}><path d={`M56 ${254-t*208}H464 M${56+t*408} 46V254`} stroke="#ffffff10"/><text x="43" y={258-t*208} textAnchor="end">{t}</text><text x={56+t*408} y="274" textAnchor="middle">{t}</text></g>)}
       <path d={`${line} L464 254 L56 254 Z`} fill="url(#roc-fill)"/>
       <path d="M56 254L464 46" stroke="#677486" strokeDasharray="5 6"/>
-      <path d={line} fill="none" stroke="#89d8c4" strokeWidth="3" strokeLinejoin="round"/>
+      <path className="roc-trace" pathLength="1" d={line} fill="none" stroke="#89d8c4" strokeWidth="3" strokeLinejoin="round"/>
       <text x="58" y="25" className="axis-caption">TRUE POSITIVE RATE</text><text x="260" y="297" textAnchor="middle" className="axis-caption">FALSE POSITIVE RATE</text>
       <text x="315" y="197" className="auc-value">{metrics.roc_auc.toFixed(3)}</text><text x="319" y="216" className="axis-caption">AREA UNDER CURVE</text>
     </svg> : <div className="matrix-view"><p>Predicted class →</p><div className="matrix-grid">{metrics.confusion_matrix.flat().map((count, i) => <div key={i} className={i === 0 || i === 3 ? 'matrix-correct' : ''}><strong>{count}</strong><span>{['True negatives', 'False positives', 'False negatives', 'True positives'][i]}</span></div>)}</div><p>Actual class: negative on top, positive below. Threshold 0.5.</p></div>}

@@ -1,3 +1,4 @@
+@font-face { font-family:'Inter'; font-style:normal; font-weight:100 900; font-display:swap; src:url('../node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2') format('woff2'); }
 /* Signal Lab: original generative art, editorial composition, and an evidence archive. */
 :root { --signal-orange: #8b7cf8; --signal-paper: #f4f4f5; }
 body { background: #09090b; }
@@ -283,3 +284,21 @@ html[data-motion=running] .observatory-hero .signal-editorial { animation: obser
 @media (prefers-reduced-motion:reduce) { .fifa-ball-sculpture,.fifa-orbit { animation: none; } }
 
 .case-study-directory { display:flex;flex-wrap:wrap;gap:18px 28px;margin-top:32px;padding:28px 0;border-top:1px solid #25242a20; }.case-study-directory p { width:100%; }.case-study-directory a { font-size:13px;color:#695186;text-decoration:underline;text-underline-offset:5px; }
+
+/* Quiet, data-specific motion with an equally useful static view. */
+.traffic-field { margin:0 0 32px; border:1px solid #69518630; border-radius:18px; background:radial-gradient(ellipse at 50% 35%,#f8f6fc,#e9e5ed); overflow:hidden; text-align:left; }
+.traffic-field-heading,.traffic-field figcaption { display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:20px 24px;font:11px ui-monospace,monospace;color:#51445f; }
+.traffic-field-heading { border-bottom:1px solid #69518620; }.traffic-field-heading > span:first-child { letter-spacing:.09em; }
+.traffic-field canvas { display:block;width:100%;height:340px; }
+.traffic-field figcaption { border-top:1px solid #69518620; }.traffic-selection { display:flex;align-items:center;gap:9px; }.traffic-selection i { width:7px;height:7px;border-radius:50%;background:#695186; }
+#anomaly .traffic-disclosure { color:#51445f!important;font-size:12px;line-height:1.7;padding:0 24px 22px;margin:0;max-width:900px; }
+.visual-in-view .roc-trace { stroke-dasharray:1;stroke-dashoffset:0;animation:roc-reveal 1.6s ease-out both; }
+.visual-in-view .matrix-view .matrix-grid > div { animation:matrix-reveal .6s ease-out both; }.matrix-view .matrix-grid > div:nth-child(2){animation-delay:.08s}.matrix-view .matrix-grid > div:nth-child(3){animation-delay:.16s}.matrix-view .matrix-grid > div:nth-child(4){animation-delay:.24s}
+@keyframes roc-reveal { from { stroke-dashoffset:1; } to { stroke-dashoffset:0; } }
+@keyframes matrix-reveal { from { opacity:.3;transform:translateY(5px); } to { opacity:1;transform:none; } }
+@media(max-width:600px){.traffic-field canvas{height:270px}.traffic-field-heading,.traffic-field figcaption{padding:16px;font-size:10px}#anomaly .traffic-disclosure{padding:0 16px 18px}}
+@media(prefers-reduced-motion:reduce){.visual-in-view .roc-trace,.visual-in-view .matrix-view .matrix-grid > div{animation:none}}
+html[data-motion=paused] .roc-trace,html[data-motion=paused] .matrix-view .matrix-grid > div{animation:none}
+.portrait-card picture { position:absolute;inset:0;display:block; }
+.observatory-hero .signal-masthead,.observatory-hero .artwork-coordinate,.observatory-hero .artwork-caption,.observatory-hero .signal-footnote { color:#62566b; }
+:focus-visible { outline-color:#8068a8; }
