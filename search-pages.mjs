@@ -2,8 +2,9 @@ import { createServer } from 'vite';
 import react from '@vitejs/plugin-react';
 import { createElement } from 'react';
 import { renderToString } from 'react-dom/server';
-import { readFile, writeFile, mkdir, copyFile } from 'node:fs/promises';
+import { readFile, writeFile, mkdir, copyFile, readdir } from 'node:fs/promises';
 import { resolve } from 'node:path';
+import sharp from 'sharp';
 
 const escape = value => String(value).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const origin = 'https://mjpatil.com';
@@ -43,7 +44,15 @@ export default function searchPages() {
         // The lazy WebGL scene mounts in the browser; do not publish React's SSR diagnostic template.
         rendered = rendered.replace(/<template[\s\S]*?<\/template>/g, '');
         await mkdir(resolve(outDir, 'images'), {recursive:true});
-        await copyFile(resolve(root, 'src/assets/about/avatar.png'), resolve(outDir, 'images/mayur-patil.png'));
+        const portrait = resolve(root, 'src/assets/about/avatar.png');
+        await copyFile(portrait, resolve(outDir, 'images/mayur-patil.png'));
+        await Promise.all([360, 600, 900].flatMap(width => [
+          sharp(portrait).resize({width,withoutEnlargement:true}).webp({quality:82,effort:5}).toFile(resolve(outDir, `images/mayur-patil-${width}.webp`)),
+          sharp(portrait).resize({width,withoutEnlargement:true}).avif({quality:55,effort:4}).toFile(resolve(outDir, `images/mayur-patil-${width}.avif`)),
+        ]));
+        const font = (await readdir(resolve(outDir,'assets'))).find(name=>name.startsWith('inter-latin-wght-normal-') && name.endsWith('.woff2'));
+        if (!font) throw new Error('Critical Inter font missing');
+        html = html.replace('</head>', `<link rel="preload" href="/assets/${font}" as="font" type="font/woff2" crossorigin></head>`);
         if (!rendered.includes('id="projects"') || !rendered.includes('Mayur')) throw new Error('Homepage prerender failed');
         html = html.replace('<div id="root"></div>', `<div id="root">${rendered}</div>`);
         await writeFile(htmlPath, html);
