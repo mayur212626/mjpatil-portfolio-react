@@ -3,8 +3,8 @@ import * as THREE from 'three';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 
 // A curved metal blade, generated parametrically rather than loaded as a model.
-function irisBlade() {
-  const positions = [], uv = [], indices = [], rows = 42, columns = 6;
+function irisBlade(rows = 42, columns = 6) {
+  const positions = [], uv = [], indices = [];
   for (let i = 0; i <= rows; i++) {
     const u = i / rows, latitude = -.98 + u * 1.96;
     for (let j = 0; j <= columns; j++) {
@@ -28,7 +28,8 @@ export default function HeroBackground({ formation = 0, energy = .4, burst = 0 }
     const paused = () => media.matches || document.documentElement.dataset.motion === 'paused';
     let renderer;
     try { renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, powerPreference: 'low-power' }); } catch { return; }
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
+    const compact = window.matchMedia('(max-width: 760px)').matches;
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, compact ? 1.25 : 1.5));
     renderer.setClearColor(0x000000, 0); renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.1;
     mount.appendChild(renderer.domElement); mount.dataset.ready = 'true';
     const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(35, 1, .1, 50);
@@ -45,11 +46,11 @@ export default function HeroBackground({ formation = 0, energy = .4, burst = 0 }
     const dark = makeMaterial({ color: 0x262231, metalness: .85, roughness: .22, clearcoat: 1 });
     const violet = makeMaterial({ color: 0x8973c9, metalness: .7, roughness: .25, emissive: 0x251146, emissiveIntensity: .2 });
     const groups = [new THREE.Group(), new THREE.Group(), new THREE.Group()]; groups.forEach(g => root.add(g));
-    const blades = [], bladeGeometry = makeGeometry(irisBlade());
+    const blades = [], bladeGeometry = makeGeometry(irisBlade(compact ? 28 : 42));
     for (let i = 0; i < 24; i++) { const blade = new THREE.Mesh(bladeGeometry, i % 6 === 0 ? violet : chrome); blade.rotation.y = i / 24 * Math.PI * 2; groups[0].add(blade); blades.push(blade); }
-    const coreGeometry = makeGeometry(new THREE.SphereGeometry(.92, 48, 32)); groups[0].add(new THREE.Mesh(coreGeometry, dark));
-    const irisRim = new THREE.Mesh(makeGeometry(new THREE.TorusGeometry(1.22, .026, 8, 128)), violet); irisRim.rotation.x = Math.PI / 2; groups[0].add(irisRim);
-    const orbitGeometry = makeGeometry(new THREE.TorusGeometry(1.8, .105, 12, 128));
+    const coreGeometry = makeGeometry(new THREE.SphereGeometry(.92, compact ? 32 : 48, compact ? 20 : 32)); groups[0].add(new THREE.Mesh(coreGeometry, dark));
+    const irisRim = new THREE.Mesh(makeGeometry(new THREE.TorusGeometry(1.22, .026, 8, compact ? 80 : 128)), violet); irisRim.rotation.x = Math.PI / 2; groups[0].add(irisRim);
+    const orbitGeometry = makeGeometry(new THREE.TorusGeometry(1.8, .105, compact ? 8 : 12, compact ? 80 : 128));
     for (let i = 0; i < 5; i++) { const ring = new THREE.Mesh(orbitGeometry, i === 2 ? violet : chrome); ring.rotation.set(i * .63, i * .47, i * .3); groups[1].add(ring); }
     groups[1].add(new THREE.Mesh(makeGeometry(new THREE.IcosahedronGeometry(.83, 3)), dark));
     const nodeGeometry = makeGeometry(new THREE.SphereGeometry(.105, 12, 8)), vectors = [], links = [];
