@@ -308,3 +308,8 @@ html[data-motion=paused] .roc-trace,html[data-motion=paused] .matrix-view .matri
 .sculpture-mode { font:10px ui-monospace,monospace;text-decoration:underline;text-underline-offset:4px;color:#51445f;cursor:pointer;padding:5px 0; }
 .project-art-cover .cover-number,.project-art-cover .cover-editorial h3,.project-art-cover .cover-bottom { color:#51445f;opacity:1; }
 .case-study-directory .eyebrow,.about-section .eyebrow,.contact-intro .eyebrow { color:#62516d; }
+
+.poster-sculpture { transform-box:view-box;transform-origin:300px 240px;animation:poster-drift var(--poster-duration,10s) ease-in-out infinite; }
+@keyframes poster-drift { 0%,100% { transform:translateY(0) rotate(-5deg); } 50% { transform:translateY(-12px) rotate(7deg); } }
+.signal-artwork:not(.visual-in-view) .poster-sculpture,.signal-render:has(.field-webgl[data-ready=true]) .poster-sculpture { animation-play-state:paused; }
+@media(prefers-reduced-motion:reduce) { .poster-sculpture { animation:none; } }
