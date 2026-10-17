@@ -19,7 +19,7 @@ function HeroPoster({ formation, energy }) {
   </svg>;
 }
 export default function Hero() {
-  const [interactive, setInteractive] = useState(false);
+  const [interactive, setInteractive] = useState(true);
   const [formation, setFormation] = useState(0);
   const [energy, setEnergy] = useState(.4);
   const [burst, setBurst] = useState(0);
